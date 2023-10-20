@@ -1,15 +1,15 @@
 # sasmerge
 
-## description
-merge sas data into consensus data
+sasmerge merges SAXS* data into a merged consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data
+* can also be applied to SANS, but resolution effects are not taken into account, so this will lead to systematic errors   
 
-## download
+## Download
 sasmerge is a python3 program, so you need python3    
 download sasmerge.py and the other python scripts in this repository       
 see dependencies  
 
-## run  
+## Run  
 
 ### standard run for merging 3 datasets
 python sasmerge.py --data "dataset1.dat dataset2.dat dataset3.dat" --title my_merged_data
@@ -17,7 +17,7 @@ python sasmerge.py --data "dataset1.dat dataset2.dat dataset3.dat" --title my_me
 ### for instructions and options, type: 
 python sasmerge --help
 
-## dependencies
+## Dependencies
 
 ### dependencies from this folder:     
 smooth.py    
