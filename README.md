@@ -34,3 +34,7 @@ os
 shutil    
 math    
 scipy    
+
+## credit
+the program was written by Andreas Haahr Larsen   
+input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette   
