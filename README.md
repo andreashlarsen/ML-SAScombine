@@ -1,8 +1,7 @@
-# sasmerge
+# SASmerge
 
-sasmerge merges SAXS* data into a merged consensus dataset   
-e.g. data measured on different instruments on the same sample or SAXS and WAXS data
-* can also be applied to SANS, but resolution effects are not taken into account, so this will lead to systematic errors   
+SASmerge merges SAS data into a merged consensus dataset   
+e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
 
 ## Download
 sasmerge is a python3 program, so you need python3    
@@ -20,20 +19,24 @@ python sasmerge --help
 ## Dependencies
 
 ### dependencies from this folder:     
-smooth.py    
-find_qmin_qmax.py    
-add_data.py      
-calculate_chi2r.py    
-get_header_footer.py     
+* smooth.py    
+* find_qmin_qmax.py    
+* add_data.py      
+* calculate_chi2r.py    
+* get_header_footer.py     
 
 ### other dependencies (standard python packages):   
-argparse     
-numpy    
-matplotlib    
-os    
-shutil    
-math    
-scipy    
+* argparse     
+* numpy    
+* matplotlib    
+* os    
+* shutil    
+* math    
+* scipy    
+
+## notes  and warnings
+* the program is a beta version - so use it with care. But feedback is more than welcome    
+* sasmerge can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors   
 
 ## credit
 the program was written by Andreas Haahr Larsen   
