@@ -14,7 +14,7 @@ see dependencies
 ### standard run for merging 3 datasets
 python sasmerge.py --data "dataset1.dat dataset2.dat dataset3.dat" --title my_merged_data
 
-### for instrucions, type: 
+### for instructions and options, type: 
 python sasmerge --help
 
 ## dependencies
