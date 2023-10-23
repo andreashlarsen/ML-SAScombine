@@ -394,6 +394,9 @@ if __name__ == "__main__":
                         print('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                     else:
                         print('%20s: %1.2f' % (data[i],chi2r_list[i]))
+                print('#########################################')
+                print('sasmerge finished successfully')
+                print('#########################################')
                 exit()
             if STOP:    
                 PLOT_ALL = args.plot_all
@@ -437,109 +440,6 @@ if __name__ == "__main__":
                     print('N in merged data: %d' % len(idx[0]))
                     print('Merged data written to file: %s' % filename_out)
 
-    
-        
-
-# run examples:
-
-##########################
-## Lysozyme - clusters OK...
-##########################
-"""
-P=Data_new/lysozyme_data/BIFT/results_L-
-
-# lysozyme, all
-T=lysozyme
-python sasmerge.py -p $P -d "X2_B1pt0_B5pt0 X1_SS X3_SS-bio X3_SS-RR X4_SS-B6pt0-RR X5_B5pt22 X5_B6pt0-RR X7_B5pt0 X9_SS X10_SS" -ext .dat/rescale.dat -t $T -r -exp
-
-# lysozyme, cluster 1
-T=lysozyme_cluster1
-python sasmerge.py -p $P -d "X7_B5pt0 X9_SS X5_B5pt22 X2_B1pt0_B5pt0 X4_SS-B6pt0-RR" -ext .dat/rescale.dat -t $T -r -exp
-
-# lysozyme, cluster 2
-T=lysozyme_cluster2
-python sasmerge.py -p $P -d "X10_SS X1_SS X3_SS-bio X3_SS-RR X5_B6pt0-RR" -ext .dat/rescale.dat -t $T -r -exp
-
-# lysozyme, test
-T=lysozyme_test
-mkdir -p test_ref_curve_lyz
-for i in {1..10}
-do
-python sasmerge.py -p $P -d "X2_B1pt0_B5pt0 X1_SS X3_SS-bio X3_SS-RR X4_SS-B6pt0-RR X5_B5pt22 X5_B6pt0-RR X7_B5pt0 X9_SS X10_SS" -ext .dat/rescale.dat -t $T -r -ref $i -pn
-mv output_$T/merge_$T.dat test_ref_curve_lyz/merge_${T}_$i.dat
-done
-"""
-
-##########################
-## RNaseA - fine... 
-##########################
-"""
-P=Data_new/RNaseA_data/BIFT/results_R-
-
-# RNaseA, all 
-T=RNaseA
-python sasmerge.py -p $P -d "X10_SS_B5pt5-1m X1_SS_B18pt1_B10pt2 X2_B1pt0-B2pt5-B5pt0 X3_SS X4_SS_B8pt0 X6_SS_B4pt1_B9pt2 X7_B5pt0_B10pt0 X8a_SS_B7pt2 X8b_SS" -ext .dat/rescale.dat -t $T -r -exp
-
-# RNase, cluster1 (exclude X1, see mail from JT)
-T=RNaseA_cluster1
-python sasmerge.py -p $P -d "X10_SS_B5pt5-1m X2_B1pt0-B2pt5-B5pt0 X3_SS X4_SS_B8pt0 X6_SS_B4pt1_B9pt2 X7_B5pt0_B10pt0 X8a_SS_B7pt2 X8b_SS" -ext .dat/rescale.dat -t $T -r -exp
-"""
-
-##########################
-## Urate Oxidase - recheck merging
-##########################
-"""
-P=Data_new/urate_oxidase_data/BIFT/results_U-
-
-# urate_oxidase, all
-T=urate_oxidase
-python sasmerge.py -p $P -d "X10_SS_B3pt9-1m X1_SS_B4pt5 X3_SS X4_SS X5_SS_B2pt9_B1pt45 X6_SS_B6pt8 X7_B1pt4-D2O X7_B1pt4-H2O X8a_SS_B5pt91 X8b_SS-Gt X12_SSpv_B5pt0" -ext .dat/rescale.dat -t $T -r -exp
-
-# urate_oxidase, cluster 1 (largest)
-T=urate_oxidase_cluster1
-python sasmerge.py -p $P -d "X10_SS_B3pt9-1m X7_B1pt4-D2O X7_B1pt4-H2O X12_SSpv_B5pt0" -ext .dat/rescale.dat -t $T -r -exp
-
-# urate_oxidase, cluster 2 (smallest)
-T=urate_oxidase_cluster2
-python sasmerge.py -p $P -d "X8a_SS_B5pt91 X3_SS X4_SS X6_SS_B6pt8 X5_SS_B2pt9_B1pt45" -ext .dat/rescale.dat -t $T -r -exp
-
-# X1 was excluded
-"""
-
-##########################
-## Xylanase - OK
-##########################
-"""
-P=Data_new/xylanase_data/BIFT/results_Xy-
-# xylanase, all
-T=xylanase
-python sasmerge.py -p $P -d "X4_SS_B14pt0 X3_SS X6_SS X8a_SS_B5pt57" -ext .dat/rescale.dat -t $T -r -exp
-"""
-
-##########################
-## Xylose Isomerase - recheck merging. 
-##########################
-"""
-P=Data_new/xylose_isomerase_data/BIFT/results_XI-
-# xylose_isomerase, all
-T=xylose_isomerase
-python sasmerge.py -p $P -d "X2-B1pt0_B5pt0_D2O X1_SS_B19pt6 X2-B1pt0_B5pt0_H2O X3_SS X4_SS_B3pt6_B7pt2 X5_B0pt33_13pt0_B X6_SS_B21pt5 X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X8a_SS_B5pt77 X8b_SS X9_SS X10_SS_B16pt0-1m-2m X11_B4pt05_B1pt93-Gt" -ext .dat/rescale.dat -t $T -r -exp
-
-# xylose_isomerase, cluster1
-T=xylose_isomerase_cluster1
-python sasmerge.py -p $P -d "X10_SS_B16pt0-1m-2m X6_SS_B21pt5 X8b_SS" -ext .dat/rescale.dat -t $T -r -exp
-
-# xylose_isomerase, cluster2
-T=xylose_isomerase_cluster2
-python sasmerge.py -p $P -d "X2-B1pt0_B5pt0_D2O X1_SS_B19pt6 X2-B1pt0_B5pt0_H2O X3_SS X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X9_SS" -ext .dat/rescale.dat -t $T -r -exp
-
-# xylose_isomerase, cluster3
-T=xylose_isomerase_cluster3
-python sasmerge.py -p $P -d "X5_B0pt33_13pt0_B X8a_SS_B5pt77 X11_B4pt05_B1pt93-Gt" -ext .dat/rescale.dat -t $T -r -exp
-
-T=xylose_isomerase_cluster4 # (mail from JT, 21 okt 2023)
-python sasmerge.py -p $P -d "X1_SS_B19pt6 X2-B1pt0_B5pt0_D2O X2-B1pt0_B5pt0_H2O X3_SS X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X8a_SS_B5pt77 X8b_SS X9_SS" -ext .dat/rescale.dat -t $T -r -exp
-
-T=xylose_isomerase_cluster5 
-python sasmerge.py -p $P -d "X1_SS_B19pt6 X2-B1pt0_B5pt0_D2O X2-B1pt0_B5pt0_H2O X3_SS X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X8a_SS_B5pt77 X8b_SS X9_SS" -ext .dat/rescale.dat -t $T -r -exp
-"""
+    print('#########################################')
+    print('sasmerge.py finished successfully')
+    print('#########################################')
