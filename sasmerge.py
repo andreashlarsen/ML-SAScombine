@@ -1,3 +1,7 @@
+###########################
+# SASmerge version beta0.1
+###########################
+
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,6 +34,8 @@ if __name__ == "__main__":
     parser.add_argument("-N", "--N", type=int, help="Maximum Number of points in merged data", default="500")
     parser.add_argument("-t", "--title", help="plot title, also used for output name [recommended]",default='Merged')
     parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included in merged data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
+    parser.add_argument("-qmin_ref", "--qmin_ref", help="Provide a min q to use in reference data, for alignment [default: 0]", default="0")
+    parser.add_argument("-qmax_ref", "--qmax_ref", help="Provide a max q to use in reference data, for alignment [default: no max value]", default="9999")
 
     # true/false options
     parser.add_argument("-r", "--range", action="store_true", help="only include q range with overlap of min 2 datasets",default=False)
@@ -75,6 +81,8 @@ if __name__ == "__main__":
     VERBOSE = True #VERBOSE = args.verbose
     NORM = args.no_normalize
     SCALE_OUTPUT = args.output_scale
+    qmin_ref = float(args.qmin_ref)
+    qmax_ref = float(args.qmax_ref)
     
     ## convert data string to list and remove empty entries
     try:
@@ -188,6 +196,10 @@ if __name__ == "__main__":
         ## import reference data
         header,footer = ghf(ref_data)
         q_ref,I_ref = np.genfromtxt(ref_data,skip_header=header,skip_footer=footer,usecols=[0,1],unpack=True)
+        if qmin_ref != 0 or qmax_ref != 9999:
+            idx = np.where((q_ref <= qmax_ref) & (q_ref >= qmin_ref))
+            q_ref,I_ref = q_ref[idx],I_ref[idx]
+
         if SMOOTH:
             N_sm = np.amax([ceil(len(q_ref)/50),1])
             I_ref = smooth(I_ref,N_sm,'lin')
@@ -373,7 +385,10 @@ if __name__ == "__main__":
                 if RANGE:
                     print('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
                 print('Merged data written to file: %s' % filename_out)
-                print('Data sorted after compatibility with merged consensus curve:')
+                if qmin_ref != 0 or qmax_ref != 9999:
+                    print('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                else:
+                    print('Data sorted after compatibility with merged consensus curve:')
                 for i in np.argsort(chi2r_list):
                     if SCALE_OUTPUT:
                         print('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
@@ -408,7 +423,10 @@ if __name__ == "__main__":
                     if RANGE:
                         print('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
                     print('Merged data written to file: %s' % filename_out)
-                    print('Data sorted after compatibility with merged consensus curve:')
+                    if qmin_ref != 0 or qmax_ref != 9999:
+                        print('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                    else:
+                        print('Data sorted after compatibility with merged consensus curve:')
                     for i in np.argsort(chi2r_list):
                         if SCALE_OUTPUT:
                             print('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
@@ -518,4 +536,10 @@ python sasmerge.py -p $P -d "X2-B1pt0_B5pt0_D2O X1_SS_B19pt6 X2-B1pt0_B5pt0_H2O 
 # xylose_isomerase, cluster3
 T=xylose_isomerase_cluster3
 python sasmerge.py -p $P -d "X5_B0pt33_13pt0_B X8a_SS_B5pt77 X11_B4pt05_B1pt93-Gt" -ext .dat/rescale.dat -t $T -r -exp
+
+T=xylose_isomerase_cluster4 # (mail from JT, 21 okt 2023)
+python sasmerge.py -p $P -d "X1_SS_B19pt6 X2-B1pt0_B5pt0_D2O X2-B1pt0_B5pt0_H2O X3_SS X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X8a_SS_B5pt77 X8b_SS X9_SS" -ext .dat/rescale.dat -t $T -r -exp
+
+T=xylose_isomerase_cluster5 
+python sasmerge.py -p $P -d "X1_SS_B19pt6 X2-B1pt0_B5pt0_D2O X2-B1pt0_B5pt0_H2O X3_SS X7_B1pt0_B3pt0-D2O X7_B1pt0_B3pt0-H2O X8a_SS_B5pt77 X8b_SS X9_SS" -ext .dat/rescale.dat -t $T -r -exp
 """
