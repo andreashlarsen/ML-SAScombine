@@ -1,21 +1,57 @@
+
 ###########################
-# SASmerge version beta0.1
+# SASmerge version beta0.2
 ###########################
 
-import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-import os
-import shutil
 
-from math import ceil
-from scipy.optimize import curve_fit
+## importing python packages
+try:
+    import argparse
+except:
+    print("ERROR: sasmerge tried to import python package argparse - is it correctly installed?\n")
+    exit()
+try:
+    import numpy as np
+except:
+    print("ERROR: sasmerge tried to import python package numpy - is it correctly installed?\n")
+    exit()
+try:
+    import os
+except:
+    print("ERROR: sasmerge tried to import python package os - is it correctly installed?\n")
+    exit() 
+try:  
+    import shutil
+except:
+    print("ERROR: sasmerge tried to import python package shutil - is it correctly installed?\n")
+    exit() 
+try: 
+    import matplotlib.pyplot as plt
+except:
+    print("## WARNING: sasmerge tried to import python package matplotlib - is it correctly installed?\n")
+    exit() 
 
-from get_header_footer import get_header_footer as ghf
-from find_qmin_qmax import find_qmin_qmax 
-from add_data import add_data
-from smooth import smooth
-from calculate_chi2r import *
+try:
+    from math import ceil
+except:
+    print("ERROR: sasmerge tried to import python package ceil from math - is it correctly installed?\n")
+    exit() 
+try:
+    from scipy.optimize import curve_fit
+except:
+    print("ERROR: sasmerge tried to import python package curve_fit from scipy.optimize - is it correctly installed?\n")
+    exit()     
+
+try:
+    from get_header_footer import get_header_footer as ghf
+    from find_qmin_qmax import find_qmin_qmax 
+    from add_data import add_data
+    from smooth import smooth
+    from calculate_chi2r import *
+except:
+    print("ERROR: sasmerge tried to import functions from files get_header_footer.py find_qmin_qmax.py add_data.py smooth.py calculate_chi2r.py")
+    print("these files should be in the same directory as sasmerge.py\n")
+    exit()
 
 if __name__ == "__main__":
     
@@ -25,7 +61,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="""SASmerge - merge multiple SAXS or SANS datasets""",usage="python sasmerge.py -d \"data1.dat data2.dat data3.dat\" <OPTIONAL ARGUMENTS>" )
 
     # options with input
-    parser.add_argument("-d", "--data", help="Datafiles (separate by space and surround by quotation marks). Include path and file extension or use --path and --ext flags.")
+    parser.add_argument("-d", "--data", help="Datafiles (format: \"d1.dat d2.dat\"). Include path and file extension or use --path and --ext flags.")
     parser.add_argument("-p", "--path", help="Add this path to all data (include slash '/' in the end)",default="./")
     parser.add_argument("-ext", "--ext", help="Add this extension to all data (include '.'). If --data is not provided, all files with this extension in folder will be used.",default="")
     parser.add_argument("-l", "--label", help="Labels for each datafile (separated by space)", default="none")
@@ -36,6 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included in merged data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
     parser.add_argument("-qmin_ref", "--qmin_ref", help="Provide a min q to use in reference data, for alignment [default: 0]", default="0")
     parser.add_argument("-qmax_ref", "--qmax_ref", help="Provide a max q to use in reference data, for alignment [default: no max value]", default="9999")
+    parser.add_argument("-exc", "--exclude", help="Exclude one or more datasets from list. list of integers with ",default="none")
 
     # true/false options
     parser.add_argument("-r", "--range", action="store_true", help="only include q range with overlap of min 2 datasets",default=False)
@@ -83,6 +120,7 @@ if __name__ == "__main__":
     SCALE_OUTPUT = args.output_scale
     qmin_ref = float(args.qmin_ref)
     qmax_ref = float(args.qmax_ref)
+    exclude_in = args.exclude
     
     ## convert data string to list and remove empty entries
     try:
@@ -97,6 +135,16 @@ if __name__ == "__main__":
         data = [file for file in os.listdir(path) if file.endswith(extension)]
         extension = ""
 
+    ## do the same for exclude input
+    if not exclude_in == "none": 
+        exclude_tmp = exclude_in.split(' ')
+        exclude  = []
+        for i in range(len(exclude_tmp)):
+            if exclude_tmp[i] in ['',' ','  ','   ','    ','     ','      ','       ']:
+                pass
+            else:
+                exclude.append(exclude_tmp[i])
+        
     if not data:
         print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\"")
         exit()
@@ -190,7 +238,7 @@ if __name__ == "__main__":
         #    print('reference data: %s' % ref_data)
 
         ## initialize figure
-        if not (PLOT_ALL or PLOT_NONE):
+        if not (PLOT_NONE or PLOT_ALL):
             fig,ax = plt.subplots(figsize=(10,10))
 
         ## import reference data
@@ -329,7 +377,7 @@ if __name__ == "__main__":
             q_merge = q_merge[idx]
             I_merge = I_merge[idx]
 
-        if not (PLOT_ALL and PLOT_NONE):
+        if not (PLOT_ALL or PLOT_NONE):
             if PLOT_MERGE:
                 if ERRORBAR:
                     plt.errorbar(q_merge,I_merge,yerr=dI_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
