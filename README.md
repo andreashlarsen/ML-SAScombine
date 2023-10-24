@@ -34,10 +34,10 @@ python sasmerge --help
 * math    
 * scipy    
 
-## notes  and warnings
+## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
 * sasmerge can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors   
 
-## credit
-the program was written by Andreas Haahr Larsen   
-input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette   
+## Credit
+The program was written by Andreas Haahr Larsen   
+Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette   
