@@ -40,7 +40,6 @@ try:
     import time
 except:
     print("ERROR: sasmerge tried to import python package time - is it correctly installed?\n")   
-
 try:
     from get_header_footer import get_header_footer as ghf
     from find_qmin_qmax import find_qmin_qmax 
@@ -63,8 +62,8 @@ if __name__ == "__main__":
 
     # options with input
     parser.add_argument("-d", "--data", help="Datafiles (format: \"d1.dat d2.dat\"). Include path and file extension or use --path and --ext flags.")
-    parser.add_argument("-p", "--path", help="Add this path to all data (include slash '/' in the end)",default="./")
-    parser.add_argument("-ext", "--ext", help="Add this extension to all data (include '.'). If --data is not provided, all files with this extension in folder will be used.",default="")
+    parser.add_argument("-p", "--path", help="Add this path to all data", default="./")
+    parser.add_argument("-ext", "--ext", help="Add this extension to all data. If --data is not provided, all files with this extension will be used.", default="")
     parser.add_argument("-l", "--label", help="Labels for each datafile (separated by space)", default="none")
     parser.add_argument("-qmin", "--qmin", help="minimum q-value in merged file", default="none")
     parser.add_argument("-qmax", "--qmax", help="maximum q-value in merged file", default="none")
@@ -135,6 +134,7 @@ if __name__ == "__main__":
     except:
         data = [file for file in os.listdir(path) if file.endswith(extension)]
         extension = ""
+        
 
     ## do the same for exclude input
     if not exclude_in == "none": 
@@ -204,18 +204,46 @@ if __name__ == "__main__":
 
     ## read reference data input
     if ref_data_in == "none":
-        ref_data_list = ['%s%s%s' % (path,data[0],extension)]
+        ref_filename = '%s%s%s' % (path,data[0],extension)
+        if not os.path.exists(ref_filename):
+            ref_filename = '%s/%s%s' % (path,data[0],extension)
+            if not os.path.exists(ref_filename):
+                ref_filename = '%s%s.%s' % (path,data[0],extension)
+                if not os.path.exists(ref_filename):
+                    ref_filename = '%s/%s.%s' % (path,data[0],extension)
+                    if not os.path.exists(ref_filename):
+                        ref_filename = '%s%s%s' % (path,data[0],extension)
+        ref_data_list = [ref_filename]
     elif ref_data_in == "all":
         ref_data_list = []
         for d in data:
-            ref_data_list.append('%s%s%s' % (path,d,extension)) 
+            ref_filename = '%s%s%s' % (path,d,extension)
+            if not os.path.exists(ref_filename):
+                ref_filename = '%s/%s%s' % (path,d,extension)
+                if not os.path.exists(ref_filename):
+                    ref_filename = '%s%s.%s' % (path,d,extension)
+                    if not os.path.exists(ref_filename):
+                        ref_filename = '%s/%s.%s' % (path,d,extension)
+                        if not os.path.exists(ref_filename):
+                            ref_filename = '%s%s%s' % (path,d,extension)
+            ref_data_list.append(ref_filename) 
     elif ref_data_in.isdigit():
         number = int(ref_data_in)
         if number > len(data):
             printt('WARNING: (regarding -ref flag) No dataset number %d (obs: indexing with 1). Using first dataset as reference data' % number)
             number = 1
         idx_ref_data = number-1
-        ref_data_list = ['%s%s%s' % (path,data[idx_ref_data],extension)]
+        ref_filename = '%s%s%s' % (path,data[idx_ref_data],extension)
+        if not os.path.exists(ref_filename):
+            ref_filename = '%s/%s%s' % (path,data[idx_ref_data],extension)
+            if not os.path.exists(ref_filename):
+                ref_filename = '%s%s.%s' % (path,data[idx_ref_data],extension)
+                if not os.path.exists(ref_filename):
+                    ref_filename = '%s/%s.%s' % (path,data[idx_ref_data],extension)
+                    if not os.path.exists(ref_filename):
+                        ref_filename = '%s%s%s' % (path,data[idx_ref_data],extension)
+
+        ref_data_list = [ref_filename]
     else:
         ref_data_list = [ref_data_in]
 
@@ -280,6 +308,14 @@ if __name__ == "__main__":
             a_list,b_list = [],[]
         for datafile,label in zip(data,labels):
             filename = '%s%s%s' % (path,datafile,extension)
+            if not os.path.exists(filename):
+                filename = '%s/%s%s' % (path,datafile,extension)
+                if not os.path.exists(filename):
+                    filename = '%s%s.%s' % (path,datafile,extension)
+                    if not os.path.exists(filename):
+                        filename = '%s/%s.%s' % (path,datafile,extension)
+                        if not os.path.exists(filename):
+                            filename = '%s%s%s' % (path,datafile,extension)
             header,footer = ghf(filename)
             q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
             if RANGE:
@@ -448,6 +484,7 @@ if __name__ == "__main__":
                 printt('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
                 printt('#########################################')
                 printt('sasmerge finished successfully')
+                printt('output sent to %s' % merge_dir)
                 printt('#########################################')
                 end_time =  time.time() - t_start
                 printt("end_time: %1.2f" % end_time)
@@ -499,6 +536,7 @@ if __name__ == "__main__":
 
     printt('#########################################')
     printt('sasmerge.py finished successfully')
+    printt('output sent to %s' % merge_dir)
     printt('#########################################')
     end_time =  time.time() - t_start
     printt("end_time: %1.2f" % end_time)
