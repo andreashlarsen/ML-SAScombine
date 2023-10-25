@@ -12,7 +12,7 @@ see dependencies
 ## Run  
 
 ### standard run for merging 3 datasets
-python sasmerge.py --data "dataset1.dat dataset2.dat dataset3.dat" --title my_merged_data
+python sasmerge.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_merged_data
 
 ### for instructions and options, type: 
 python sasmerge --help
