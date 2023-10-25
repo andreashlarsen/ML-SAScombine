@@ -1,50 +1,45 @@
 
 ###########################
-# SASmerge version beta0.2
+# SASmerge version beta0.3
 ###########################
 
-
 ## importing python packages
+import sys
 try:
     import argparse
 except:
     print("ERROR: sasmerge tried to import python package argparse - is it correctly installed?\n")
-    exit()
+    sys.exit(1)
 try:
     import numpy as np
 except:
     print("ERROR: sasmerge tried to import python package numpy - is it correctly installed?\n")
-    exit()
+    sys.exit(1)
 try:
     import os
 except:
     print("ERROR: sasmerge tried to import python package os - is it correctly installed?\n")
-    exit() 
+    sys.exit(1)
 try:  
     import shutil
 except:
     print("ERROR: sasmerge tried to import python package shutil - is it correctly installed?\n")
-    exit() 
+    sys.exit(1)
 try: 
     import matplotlib.pyplot as plt
 except:
     print("## WARNING: sasmerge tried to import python package matplotlib - is it correctly installed?\n")
-    exit() 
+    sys.exit(1)
 
 try:
     from math import ceil
 except:
     print("ERROR: sasmerge tried to import python package ceil from math - is it correctly installed?\n")
-    exit() 
+    sys.exit(1)
 try:
-    from scipy.optimize import curve_fit
+    import time
 except:
-    print("ERROR: sasmerge tried to import python package curve_fit from scipy.optimize - is it correctly installed?\n")
-    exit()  
-#try:
-#    import time
-#except:
-#    print("ERROR: sasmerge tried to import python package time - is it correctly installed?\n")   
+    print("ERROR: sasmerge tried to import python package time - is it correctly installed?\n")   
 
 try:
     from get_header_footer import get_header_footer as ghf
@@ -55,7 +50,7 @@ try:
 except:
     print("ERROR: sasmerge tried to import functions from files get_header_footer.py find_qmin_qmax.py add_data.py smooth.py calculate_chi2r.py")
     print("these files should be in the same directory as sasmerge.py\n")
-    exit()
+    sys.exit(1)
 
 if __name__ == "__main__":
     
@@ -80,6 +75,7 @@ if __name__ == "__main__":
     parser.add_argument("-qmax_ref", "--qmax_ref", help="Provide a max q to use in reference data, for alignment [default: no max value]", default="9999")
     parser.add_argument("-exc", "--exclude", help="Exclude one or more datasets from list. list of integers with ",default="none")
     parser.add_argument("-cc", "--conv_crit", help="Convergence criteria change of chi-square [default: 0.0001]",default="0.0001")
+    
     # true/false options
     parser.add_argument("-r", "--range", action="store_true", help="only include q range with overlap of min 2 datasets",default=False)
     parser.add_argument("-rs", "--ref_smooth", action="store_true", help="smooth reference curve before alignment [not recommended]", default=False)
@@ -160,7 +156,7 @@ if __name__ == "__main__":
         
     if not data:
         print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\"")
-        exit()
+        sys.exit(1)
 
     ## labels
     if label_in == "none":
@@ -200,6 +196,12 @@ if __name__ == "__main__":
         os.mkdir(merge_dir)
         print('Output directory %s already existed - deleted old directory and created new' % merge_dir)
 
+    ## file for stdout using printt function
+    f_out = open('%s/%s_out.txt' % (merge_dir,title),'w')
+    def printt(s):
+        print(s)
+        f_out.write('%s\n' %s)
+
     ## read reference data input
     if ref_data_in == "none":
         ref_data_list = ['%s%s%s' % (path,data[0],extension)]
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     elif ref_data_in.isdigit():
         number = int(ref_data_in)
         if number > len(data):
-            print('WARNING: (regarding -ref flag) No dataset number %d (obs: indexing with 1). Using first dataset as reference data' % number)
+            printt('WARNING: (regarding -ref flag) No dataset number %d (obs: indexing with 1). Using first dataset as reference data' % number)
             number = 1
         idx_ref_data = number-1
         ref_data_list = ['%s%s%s' % (path,data[idx_ref_data],extension)]
@@ -218,16 +220,16 @@ if __name__ == "__main__":
         ref_data_list = [ref_data_in]
 
     ## print input values
-    print('#########################################')
-    print('RUNNING sasmerge.py \nfor instructions: python sasmerge.py -h')
-    print('#########################################')
-    print('data :')
+    printt('#########################################')
+    printt('RUNNING sasmerge.py \nfor instructions: python sasmerge.py -h')
+    printt('#########################################')
+    printt('data :')
     for name in data:
-        print('       %s' % name)
-    print('qmin : %f' % qmin)
-    print('qmax : %f' % qmax)
-    print('N_max: %d' % N_merge)
-    print('ref  : %s' % ref_data_list[0])
+        printt('       %s' % name)
+    printt('qmin : %f' % qmin)
+    printt('qmax : %f' % qmax)
+    printt('N_max: %d' % N_merge)
+    printt('ref  : %s' % ref_data_list[0])
     if CONV:
         imax = 30
         for i in range(imax+1):
@@ -239,7 +241,7 @@ if __name__ == "__main__":
         PLOT_MERGE = False
         STOP_NEXT = False
         VERBOSE = False
-        print('The results are independent on the choise of reference curve, unless --no_conv is used')
+        printt('The results are independent on the choise of reference curve, unless --no_conv is used')
 
     ## loop over reference data list until you get converged solution
     count = 0
@@ -267,7 +269,7 @@ if __name__ == "__main__":
             except:
                 shutil.rmtree(exp_dir)
                 os.mkdir(exp_dir)
-                print('Output directory %s already existed - delete old directory and created new' % exp_dir)
+                printt('Output directory %s already existed - delete old directory and created new' % exp_dir)
 
         ## merge data
         q_sum,I_sum,w_sum = np.zeros(N_merge),np.zeros(N_merge),np.zeros(N_merge)
@@ -290,16 +292,11 @@ if __name__ == "__main__":
             ## truncate data (only for scaling), to have same q-range as ref data
             q_t,I_t,dI_t = trunc(q,I,dI,q_ref)
 
-            ## interpolate ref data on q-values
-            I_interp = np.interp(q_t,q_ref,I_ref)
-            def lin_func(q_t,a,b):
-                return a*I_interp+b 
-            a0,b0 = I_t[0]/I_interp[0],I_t[-1]-I_interp[-1]
-            popt,pcov = curve_fit(lin_func,q_t,I_t,sigma=dI_t,p0=[a0,b0])
-            I_interp_fit = lin_func(q_t,*popt)
-            R = (I_t - I_interp_fit)/dI_t
+            ## fit ref data to truncated) data 
+            I_interp_fit,popt = fit_scale_offset(q_t,I_t,dI_t,q_ref,I_ref)
 
-            ## calc chi2r
+            ## calc residuals and chi2r
+            R = (I_t - I_interp_fit)/dI_t
             dof = len(q_t)-2 # 2 is the number of fitting parameters len(popt)
             chi2r,p = calculate_chi2r(R,dof)
             chi2r_list.append(chi2r)
@@ -355,13 +352,13 @@ if __name__ == "__main__":
 
             ## output
             if VERBOSE:
-                print('------------------------------------------------------------\ncompare %s with %s\n------------------------------------------------------------' % (label,ref_data))
-                print('N of %s: %d' % (label,M))
-                print('chi2r = %1.1f (dof=%d, p=%1.6f)' % (chi2r,dof,p))
+                printt('------------------------------------------------------------\ncompare %s with %s\n------------------------------------------------------------' % (label,ref_data))
+                printt('N of %s: %d' % (label,M))
+                printt('chi2r = %1.1f (dof=%d, p=%1.6f)' % (chi2r,dof,p))
                 if p < 0.0001:
-                    print("WARNING: data may be incompatible (p<0.0001). Rerun with flag --plot_all for visual comparison and residuals")
+                    printt("WARNING: data may be incompatible (p<0.0001). Rerun with flag --plot_all for visual comparison and residuals")
                 if EXPORT:
-                    print('Scaled and subtracted data written to file: %s' % filename_scaled)
+                    printt('Scaled and subtracted data written to file: %s' % filename_scaled)
 
         if RANGE:
             # sort qmin and qmax lists
@@ -433,28 +430,29 @@ if __name__ == "__main__":
 
         if CONV:
             if STOP_NEXT:
-                print('#########################################')
-                print('Converged after %d iterations' % count)
-                print('N in merged data: %d' % len(idx[0]))
+                printt('#########################################')
+                printt('Converged after %d iterations' % count)
+                printt('N in merged data: %d' % len(idx[0]))
                 if RANGE:
-                    print('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
-                print('Merged data written to file: %s' % filename_out)
+                    printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
+                printt('Merged data written to file: %s' % filename_out)
                 if qmin_ref != 0 or qmax_ref != 9999:
-                    print('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                    printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
                 else:
-                    print('Data sorted after compatibility with merged consensus curve:')
+                    printt('Data sorted after compatibility with merged consensus curve:')
                 for i in np.argsort(chi2r_list):
                     if SCALE_OUTPUT:
-                        print('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
+                        printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                     else:
-                        print('%20s: %1.2f' % (data[i],chi2r_list[i]))
-                print('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
-                print('#########################################')
-                print('sasmerge finished successfully')
-                print('#########################################')
-                #end_time =  time.time() - t_start
-                #print("end_time: %1.2f" % end_time)
-                exit()
+                        printt('%20s: %1.2f' % (data[i],chi2r_list[i]))
+                printt('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
+                printt('#########################################')
+                printt('sasmerge finished successfully')
+                printt('#########################################')
+                end_time =  time.time() - t_start
+                printt("end_time: %1.2f" % end_time)
+                f_out.close()
+                sys.exit(0)
             if STOP:    
                 PLOT_ALL = args.plot_all
                 PLOT_NONE = args.plot_none
@@ -477,30 +475,31 @@ if __name__ == "__main__":
         if VERBOSE:
             if CONV:
                 if count > imax:
-                    print('#########################################')
-                    print('Max number of iterations reached (imax = %d)' % imax)
-                    print('N in merged data: %d' % len(idx[0]))
+                    printt('#########################################')
+                    printt('Max number of iterations reached (imax = %d)' % imax)
+                    printt('N in merged data: %d' % len(idx[0]))
                     if RANGE:
-                        print('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
-                    print('Merged data written to file: %s' % filename_out)
+                        printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
+                    printt('Merged data written to file: %s' % filename_out)
                     if qmin_ref != 0 or qmax_ref != 9999:
-                        print('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                        printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
                     else:
-                        print('Data sorted after compatibility with merged consensus curve:')
-                        print('Data   chi2r')
+                        printt('Data sorted after compatibility with merged consensus curve:')
+                        printt('Data   chi2r')
                     for i in np.argsort(chi2r_list):
                         if SCALE_OUTPUT:
-                            print('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
+                            printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                         else:
-                            print('%20s: %1.2f' % (data[i],chi2r_list[i]))
-                    print('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
+                            printt('%20s: %1.2f' % (data[i],chi2r_list[i]))
+                    printt('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
             else:
-                    print('#########################################')
-                    print('N in merged data: %d' % len(idx[0]))
-                    print('Merged data written to file: %s' % filename_out)
+                    printt('#########################################')
+                    printt('N in merged data: %d' % len(idx[0]))
+                    printt('Merged data written to file: %s' % filename_out)
 
-    print('#########################################')
-    print('sasmerge.py finished successfully')
-    print('#########################################')
-    #end_time =  time.time() - t_start
-    #print("end_time: %1.2f" % end_time)
+    printt('#########################################')
+    printt('sasmerge.py finished successfully')
+    printt('#########################################')
+    end_time =  time.time() - t_start
+    printt("end_time: %1.2f" % end_time)
+    f_out.close()
