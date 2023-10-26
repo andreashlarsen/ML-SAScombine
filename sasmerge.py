@@ -1,6 +1,6 @@
 
 ###########################
-# SASmerge version beta0.4
+# SASmerge version beta0.5
 ###########################
 
 ## importing python packages
@@ -82,6 +82,7 @@ if __name__ == "__main__":
     parser.add_argument("-sc", "--output_scale", action="store_true", help="output scale factors and constant adjustments", default=False)
     parser.add_argument("-nl", "--no_log_q", action="store_false", help="make the merged data equispaced on lin-scale (instead of on log-scale which is default)",default=True)
     parser.add_argument("-exp", "--export", action="store_true", help="export scaled and subtracted curves", default=False)
+    parser.add_argument("-res", "--res", action="store_true", help="export file with residuals", default=False)
     
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
@@ -108,6 +109,7 @@ if __name__ == "__main__":
     SAVE_PLOT  = args.save_plot
     PLOT_MERGE = args.no_plot_merge
     EXPORT = args.export
+    RES = args.res
     PLOT_LIN = args.plot_lin
     title = args.title
     RANGE = args.range
@@ -247,7 +249,7 @@ if __name__ == "__main__":
         ref_data_list = [ref_filename]
     else:
         ref_data_list = [ref_data_in]
-
+    
     ## print input values
     printt('#########################################')
     printt('RUNNING sasmerge.py \nfor instructions: python sasmerge.py -h')
@@ -272,6 +274,10 @@ if __name__ == "__main__":
         VERBOSE = False
         printt('The results are independent on the choise of reference curve, unless --no_conv is used')
 
+    if RES:
+       res_dir = '%s/residuals' % merge_dir
+       os.mkdir(res_dir)
+
     ## loop over reference data list until you get converged solution
     count = 0
     for ref_data in ref_data_list:
@@ -293,7 +299,7 @@ if __name__ == "__main__":
             I_ref = smooth(I_ref,N_sm,'lin')
 
         if EXPORT:
-            exp_dir = 'output_%s/scaled_data' % title
+            exp_dir = '%s/scaled_data' % merge_dir
             try: 
                 os.mkdir(exp_dir)
             except:
@@ -347,13 +353,14 @@ if __name__ == "__main__":
                 a_list.append(1/a)
                 b_list.append(-b/a) 
 
+            
+            if CONV:
+                fit_data = 'merged data'
+            else:
+                fit_data = 'reference data'
+
             ## plot interpolation
             if PLOT_ALL and not PLOT_NONE:
-                if CONV:
-                    fit_data = 'merged data'
-                else:
-                    fit_data = 'reference data'
-
                 figa,axa = plt.subplots(2,1,gridspec_kw={'height_ratios': [4,1]},figsize=(10,10))
 
                 axa[0].errorbar(q,I,yerr=dI,marker='.',markersize=ms,linestyle='none',zorder=0,label=label)
@@ -375,8 +382,17 @@ if __name__ == "__main__":
                 else:
                     axa[1].set_yticks([-Rmax,0,Rmax])
                 axa[1].set_xlim(axa[0].get_xlim())
+
                 if SAVE_PLOT:
-                    figa.savefig('output_%s/fit_%s' % (title,label))
+                    figa.savefig('%s/fit_%s' % (merge_dir,label))
+            
+            ## export residuals etc
+            if RES:
+                with open('%s/fit_res_%s.dat' % (res_dir,label),'w') as f:
+                    f.write('# fit %s with %s, chi2r = %1.2f\n' % (label,fit_data,chi2r))
+                    f.write('%-14s %-14s %-14s %-14s %-20s\n' % ('# q','  I','  sigma','  Ifit','  R = (I-Ifit)/sig'))
+                    for x1,x2,x3,x4,x5 in zip(q_t,I,dI,I_interp_fit,R):
+                        f.write('%14e %14e %14e %14e %14e\n' % (x1,x2,x3,x4,x5))
 
             ## export data
             if EXPORT:
@@ -463,7 +479,7 @@ if __name__ == "__main__":
             ax.legend(bbox_to_anchor=(1.3,1.0))
             fig.tight_layout()
             if SAVE_PLOT:
-                fig.savefig('output_%s/merge_%s' % (title,title)) 
+                fig.savefig('%s/merge_%s' % (merge_dir,title)) 
 
         try:
             if chi2r_list_prev is not None:
