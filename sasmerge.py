@@ -1,6 +1,6 @@
 
 ###########################
-# SASmerge version beta0.3
+# SASmerge version beta0.4
 ###########################
 
 ## importing python packages
@@ -30,7 +30,6 @@ try:
 except:
     print("## WARNING: sasmerge tried to import python package matplotlib - is it correctly installed?\n")
     sys.exit(1)
-
 try:
     from math import ceil
 except:
@@ -160,7 +159,9 @@ if __name__ == "__main__":
 
     ## labels
     if label_in == "none":
-        labels = data
+        labels = []
+        for l in data:
+            labels.append(l.split('.')[0])
     else:
         labels = label_in.split(' ')
     ms = 4 # markersize in plots
@@ -276,7 +277,8 @@ if __name__ == "__main__":
     for ref_data in ref_data_list:
 
         ## initialize figure
-        if not (PLOT_NONE or PLOT_ALL):
+        #if not (PLOT_NONE or PLOT_ALL):
+        if not PLOT_NONE:
             fig,ax = plt.subplots(figsize=(10,10))
 
         ## import reference data
@@ -347,26 +349,28 @@ if __name__ == "__main__":
 
             ## plot interpolation
             if PLOT_ALL and not PLOT_NONE:
-                fig,ax = plt.subplots(2,1,gridspec_kw={'height_ratios': [4,1]},figsize=(10,10))
-                ax[0].errorbar(q,I,yerr=dI,marker='.',markersize=ms,linestyle='none',zorder=0,label=label)
-                ax[0].plot(q_t,I_interp_fit,color='black',label=r'fit with ref data, $\chi^2$ %1.1f' % chi2r,zorder=1)
-                ax[0].set_yscale('log')
-                ax[0].set_xlabel('q')
-                ax[0].set_ylabel('Intensity')
-                ax[0].legend()
-                ax[1].plot(q_t,0*q_t,color='black',zorder=1)
+                figa,axa = plt.subplots(2,1,gridspec_kw={'height_ratios': [4,1]},figsize=(10,10))
+                axa[0].errorbar(q,I,yerr=dI,marker='.',markersize=ms,linestyle='none',zorder=0,label=label)
+                axa[0].plot(q_t,I_interp_fit,color='black',label=r'fit with ref data, $\chi^2$ %1.1f' % chi2r,zorder=1)
+                axa[0].set_yscale('log')
+                axa[0].set_xlabel('q')
+                axa[0].set_ylabel('Intensity')
+                axa[0].legend()
+                axa[0].set_title('fit of reference data to %s' % label)
+                axa[1].plot(q_t,0*q_t,color='black',zorder=1)
 
-                ax[1].plot(q_t,R,linestyle='none',marker='.',markersize=ms,zorder=0)
+                axa[1].plot(q_t,R,linestyle='none',marker='.',markersize=ms,zorder=0)
                 Rmax = ceil(np.amax(abs(R)))
-                ax[1].set_ylim(-Rmax,Rmax)
+                axa[1].set_ylim(-Rmax,Rmax)
                 if Rmax >= 4:
-                    ax[1].plot(q_t,3*np.ones(len(q_t)),color='grey',linestyle='--',zorder=1)
-                    ax[1].plot(q_t,-3*np.ones(len(q_t)),color='grey',linestyle='--',zorder=1)
-                    ax[1].set_yticks([-Rmax,-3,0,3,Rmax])
+                    axa[1].plot(q_t,3*np.ones(len(q_t)),color='grey',linestyle='--',zorder=1)
+                    axa[1].plot(q_t,-3*np.ones(len(q_t)),color='grey',linestyle='--',zorder=1)
+                    axa[1].set_yticks([-Rmax,-3,0,3,Rmax])
                 else:
-                    ax[1].set_yticks([-Rmax,0,Rmax])
-                ax[1].set_xlim(ax[0].get_xlim())
-                plt.show()
+                    axa[1].set_yticks([-Rmax,0,Rmax])
+                axa[1].set_xlim(axa[0].get_xlim())
+                if SAVE_PLOT:
+                    figa.savefig('output_%s/fit_%s' % (title,label))
 
             ## export data
             if EXPORT:
@@ -380,11 +384,12 @@ if __name__ == "__main__":
                     
             add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_edges)
 
-            if not (PLOT_ALL or PLOT_NONE):
+            #if not (PLOT_ALL or PLOT_NONE):
+            if not PLOT_NONE:
                 if ERRORBAR:
-                    plt.errorbar(q,I_fit,yerr=dI_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
+                    ax.errorbar(q,I_fit,yerr=dI_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
                 else:
-                    plt.plot(q,I_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
+                    ax.plot(q,I_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
 
             ## output
             if VERBOSE:
@@ -416,12 +421,13 @@ if __name__ == "__main__":
             q_merge = q_merge[idx]
             I_merge = I_merge[idx]
 
-        if not (PLOT_ALL or PLOT_NONE):
+        #if not (PLOT_ALL or PLOT_NONE):
+        if not PLOT_NONE:
             if PLOT_MERGE:
                 if ERRORBAR:
-                    plt.errorbar(q_merge,I_merge,yerr=dI_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
+                    ax.errorbar(q_merge,I_merge,yerr=dI_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
                 else:
-                    plt.plot(q_merge,I_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
+                    ax.plot(q_merge,I_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
 
         if NORM:
             ## normalize before export
@@ -440,18 +446,18 @@ if __name__ == "__main__":
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
 
         ## figure settings
-        if not (PLOT_ALL or PLOT_NONE):
+        #if not (PLOT_ALL or PLOT_NONE):
+        if not PLOT_NONE:
             ax.set_title(title)
             if not PLOT_LIN:
                 ax.set_xscale('log')
             ax.set_yscale('log')
             ax.set_xlabel('q')
             ax.set_ylabel('Intensity')
-            plt.legend(bbox_to_anchor=(1.3,1.0))
-            plt.tight_layout()
+            ax.legend(bbox_to_anchor=(1.3,1.0))
+            fig.tight_layout()
             if SAVE_PLOT:
-                plt.savefig('output_%s/merge_%s' % (title,title))
-            plt.show() 
+                fig.savefig('output_%s/merge_%s' % (title,title)) 
 
         try:
             if chi2r_list_prev is not None:
@@ -481,14 +487,16 @@ if __name__ == "__main__":
                         printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                     else:
                         printt('%20s: %1.2f' % (data[i],chi2r_list[i]))
+                end_time =  time.time() - t_start
                 printt('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
                 printt('#########################################')
                 printt('sasmerge finished successfully')
-                printt('output sent to %s' % merge_dir)
-                printt('#########################################')
-                end_time =  time.time() - t_start
-                printt("end_time: %1.2f" % end_time)
+                printt('output sent to folder %s' % merge_dir)
+                printt("run time: %1.2f" % end_time)
+                printt('#########################################')    
                 f_out.close()
+                if not PLOT_NONE:
+                    plt.show()
                 sys.exit(0)
             if STOP:    
                 PLOT_ALL = args.plot_all
@@ -534,10 +542,12 @@ if __name__ == "__main__":
                     printt('N in merged data: %d' % len(idx[0]))
                     printt('Merged data written to file: %s' % filename_out)
 
+    end_time =  time.time() - t_start   
     printt('#########################################')
     printt('sasmerge.py finished successfully')
-    printt('output sent to %s' % merge_dir)
+    printt('output sent to folder %s' % merge_dir)
+    printt("run time: %1.2f" % end_time)
     printt('#########################################')
-    end_time =  time.time() - t_start
-    printt("end_time: %1.2f" % end_time)
     f_out.close()
+    if not PLOT_NONE:
+        plt.show()
