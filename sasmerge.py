@@ -349,18 +349,24 @@ if __name__ == "__main__":
 
             ## plot interpolation
             if PLOT_ALL and not PLOT_NONE:
+                if CONV:
+                    fit_data = 'merged data'
+                else:
+                    fit_data = 'reference data'
+
                 figa,axa = plt.subplots(2,1,gridspec_kw={'height_ratios': [4,1]},figsize=(10,10))
+
                 axa[0].errorbar(q,I,yerr=dI,marker='.',markersize=ms,linestyle='none',zorder=0,label=label)
-                axa[0].plot(q_t,I_interp_fit,color='black',label=r'fit with ref data, $\chi^2$ %1.1f' % chi2r,zorder=1)
+                axa[0].plot(q_t,I_interp_fit,color='black',label=r'fit with %s, $\chi^2$ %1.1f' % (fit_data,chi2r),zorder=1)
                 axa[0].set_yscale('log')
                 axa[0].set_xlabel('q')
                 axa[0].set_ylabel('Intensity')
                 axa[0].legend()
-                axa[0].set_title('fit of reference data to %s' % label)
-                axa[1].plot(q_t,0*q_t,color='black',zorder=1)
+                axa[0].set_title('fit of %s data to %s' % (fit_data,label))
 
-                axa[1].plot(q_t,R,linestyle='none',marker='.',markersize=ms,zorder=0)
                 Rmax = ceil(np.amax(abs(R)))
+                axa[1].plot(q_t,0*q_t,color='black',zorder=1)
+                axa[1].plot(q_t,R,linestyle='none',marker='.',markersize=ms,zorder=0)
                 axa[1].set_ylim(-Rmax,Rmax)
                 if Rmax >= 4:
                     axa[1].plot(q_t,3*np.ones(len(q_t)),color='grey',linestyle='--',zorder=1)
