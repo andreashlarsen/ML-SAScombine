@@ -1,5 +1,5 @@
 # SASmerge
-version beta0.4
+version beta0.5
 
 SASmerge merges SAS data into a merged consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
