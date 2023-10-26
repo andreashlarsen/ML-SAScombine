@@ -1,5 +1,5 @@
 # SASmerge
-version beta0.3
+version beta0.4
 
 SASmerge merges SAS data into a merged consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
@@ -40,7 +40,6 @@ python sasmerge --help
 ## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
 * sasmerge can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
-* known issues with closing plots in WSL linux. Maybe this is a help: https://stackoverflow.com/questions/60917872/recurring-problem-with-plotting-graphs-in-wsl-ubuntu 
 
 ## Credit
 The program was written by Andreas Haahr Larsen   
