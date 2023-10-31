@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 
 ###########################
 # SASmerge version beta0.5
@@ -40,14 +41,10 @@ try:
 except:
     print("ERROR: sasmerge tried to import python package time - is it correctly installed?\n")   
 try:
-    from get_header_footer import get_header_footer as ghf
-    from find_qmin_qmax import find_qmin_qmax 
-    from add_data import add_data
-    from smooth import smooth
-    from calculate_chi2r import *
+    from sasmerge_functions import *
 except:
-    print("ERROR: sasmerge tried to import functions from files get_header_footer.py find_qmin_qmax.py add_data.py smooth.py calculate_chi2r.py")
-    print("these files should be in the same directory as sasmerge.py\n")
+    print("ERROR: sasmerge tried to import functions from files sasmerge_functions.py")
+    print("this file should be in the same directory as sasmerge.py\n")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -133,9 +130,12 @@ if __name__ == "__main__":
             if not data_tmp[i] in ['',' ','  ','   ','    ','     ','      ','       ','        ']:
                 data.append(data_tmp[i])
     except:
-        data = [file for file in os.listdir(path) if file.endswith(extension)]
-        extension = ""
-        
+        if not extension == "":
+            data = [file for file in os.listdir(path) if file.endswith(extension)]
+            extension = ""
+        else:
+            print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\"")
+            sys.exit(1)
 
     ## do the same for exclude input
     if not exclude_in == "none": 
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     ms = 4 # markersize in plots
 
     ## determine qmin and qmax
-    qmin_data,qmax_data = find_qmin_qmax(path,data,extension)
+    qmin_data,qmax_data = find_qmin_qmax(path,data,extension,RANGE)
     if qmin_in == "none":
         qmin = qmin_data
     else:
@@ -288,7 +288,7 @@ if __name__ == "__main__":
             fig,ax = plt.subplots(figsize=(10,10))
 
         ## import reference data
-        header,footer = ghf(ref_data)
+        header,footer = get_header_footer(ref_data)
         q_ref,I_ref = np.genfromtxt(ref_data,skip_header=header,skip_footer=footer,usecols=[0,1],unpack=True)
         if qmin_ref != 0 or qmax_ref != 9999:
             idx = np.where((q_ref <= qmax_ref) & (q_ref >= qmin_ref))
@@ -310,8 +310,8 @@ if __name__ == "__main__":
         ## merge data
         q_sum,I_sum,w_sum = np.zeros(N_merge),np.zeros(N_merge),np.zeros(N_merge)
         chi2r_list = []
-        if RANGE:
-            qmin_list,qmax_list = [],[]
+        #if RANGE:
+        #    qmin_list,qmax_list = [],[]
         if SCALE_OUTPUT:
             a_list,b_list = [],[]
         for datafile,label in zip(data,labels):
@@ -324,11 +324,11 @@ if __name__ == "__main__":
                         filename = '%s/%s.%s' % (path,datafile,extension)
                         if not os.path.exists(filename):
                             filename = '%s%s%s' % (path,datafile,extension)
-            header,footer = ghf(filename)
+            header,footer = get_header_footer(filename)
             q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
-            if RANGE:
-                qmin_list.append(np.amin(q_in))
-                qmax_list.append(np.amax(q_in))
+            #if RANGE:
+            #    qmin_list.append(np.amin(q_in))
+            #    qmax_list.append(np.amax(q_in))
             idx = np.where(q_in<=qmax)
             q,I,dI = q_in[idx],I_in[idx],dI_in[idx]
             M = len(q)            
@@ -348,12 +348,13 @@ if __name__ == "__main__":
             ## get scaling and offset
             a,b = popt
             I_fit = (I-b)/a
-            dI_fit = dI/a  
+            I_in_fit = (I_in-b)/a
+            dI_fit = dI/a 
+            dI_in_fit = dI_in/a 
             if SCALE_OUTPUT:
                 a_list.append(1/a)
                 b_list.append(-b/a) 
 
-            
             if CONV:
                 fit_data = 'merged data'
             else:
@@ -391,7 +392,7 @@ if __name__ == "__main__":
                 with open('%s/fit_res_%s.dat' % (res_dir,label),'w') as f:
                     f.write('# fit %s with %s, chi2r = %1.2f\n' % (label,fit_data,chi2r))
                     f.write('%-14s %-14s %-14s %-14s %-20s\n' % ('# q','  I','  sigma','  Ifit','  R = (I-Ifit)/sig'))
-                    for x1,x2,x3,x4,x5 in zip(q_t,I,dI,I_interp_fit,R):
+                    for x1,x2,x3,x4,x5 in zip(q_t,I_t,dI_t,I_interp_fit,R):
                         f.write('%14e %14e %14e %14e %14e\n' % (x1,x2,x3,x4,x5))
 
             ## export data
@@ -409,9 +410,9 @@ if __name__ == "__main__":
             #if not (PLOT_ALL or PLOT_NONE):
             if not PLOT_NONE:
                 if ERRORBAR:
-                    ax.errorbar(q,I_fit,yerr=dI_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
+                    ax.errorbar(q_in,I_in_fit,yerr=dI_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
                 else:
-                    ax.plot(q,I_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
+                    ax.plot(q_in,I_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
 
             ## output
             if VERBOSE:
@@ -423,12 +424,12 @@ if __name__ == "__main__":
                 if EXPORT:
                     printt('Scaled and subtracted data written to file: %s' % filename_scaled)
 
-        if RANGE:
-            # sort qmin and qmax lists
-            qmin_list.sort()
-            qmax_list.sort()
-            # find qmin and qmax with at least 2 datasets
-            qmin_global,qmax_global = qmin_list[1],qmax_list[-2]
+        #if RANGE:
+        #    # sort qmin and qmax lists
+        #    qmin_list.sort()
+        #    qmax_list.sort()
+        #    # find qmin and qmax with at least 2 datasets
+        #    qmin_global,qmax_global = qmin_list[1],qmax_list[-2]
 
         ## weighted averages
         idx = np.where(w_sum>0.0)   
@@ -436,12 +437,12 @@ if __name__ == "__main__":
         I_merge = I_sum[idx]/w_sum[idx]
         dI_merge = w_sum[idx]**-0.5
 
-        ## truncate to qmin and qmax with at least 2 datasets
-        if RANGE:
-            idx = np.where((q_merge >= qmin_global) & (q_merge <= qmax_global))
-            dI_merge = dI_merge[idx]
-            q_merge = q_merge[idx]
-            I_merge = I_merge[idx]
+        ### truncate to qmin and qmax with at least 2 datasets
+        #if RANGE:
+        #    idx = np.where((q_merge >= qmin_global) & (q_merge <= qmax_global))
+        #    dI_merge = dI_merge[idx]
+        #    q_merge = q_merge[idx]
+        #    I_merge = I_merge[idx]
 
         #if not (PLOT_ALL or PLOT_NONE):
         if not PLOT_NONE:
@@ -453,7 +454,7 @@ if __name__ == "__main__":
 
         if NORM:
             ## normalize before export
-            I_merge = I_merge - np.min(I_merge) + 1e-4 #ensures all points are positive.
+            I_merge = I_merge - np.min(I_merge) + 1e-3 #ensures all points are positive and add background
             I0 = np.mean(I_merge[0:4])
             I_merge /= I0
             dI_merge /= I0
@@ -473,10 +474,14 @@ if __name__ == "__main__":
             ax.set_title(title)
             if not PLOT_LIN:
                 ax.set_xscale('log')
+                xmin = qmin * 0.5
+            else:
+                xmin = 0
             ax.set_yscale('log')
             ax.set_xlabel('q')
             ax.set_ylabel('Intensity')
             ax.legend(bbox_to_anchor=(1.3,1.0))
+            ax.set_xlim(xmin,qmax*1.2)
             fig.tight_layout()
             if SAVE_PLOT:
                 fig.savefig('%s/merge_%s' % (merge_dir,title)) 
@@ -498,7 +503,7 @@ if __name__ == "__main__":
                 printt('Converged after %d iterations' % count)
                 printt('N in merged data: %d' % len(idx[0]))
                 if RANGE:
-                    printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
+                    printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin,qmax))
                 printt('Merged data written to file: %s' % filename_out)
                 if qmin_ref != 0 or qmax_ref != 9999:
                     printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
@@ -546,7 +551,7 @@ if __name__ == "__main__":
                     printt('Max number of iterations reached (imax = %d)' % imax)
                     printt('N in merged data: %d' % len(idx[0]))
                     if RANGE:
-                        printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin_global,qmax_global))
+                        printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin,qmax))
                     printt('Merged data written to file: %s' % filename_out)
                     if qmin_ref != 0 or qmax_ref != 9999:
                         printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
