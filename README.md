@@ -1,5 +1,5 @@
 # SASmerge
-version beta0.5
+version beta0.6
 
 SASmerge merges SAS data into a merged consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
@@ -20,11 +20,7 @@ python sasmerge --help
 ## Dependencies
 
 ### dependencies from this folder:     
-* smooth.py    
-* find_qmin_qmax.py    
-* add_data.py      
-* calculate_chi2r.py    
-* get_header_footer.py     
+* sasmerge_functions.py  
 
 ### other dependencies (standard python packages):   
 * argparse     
