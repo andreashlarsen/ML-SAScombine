@@ -31,7 +31,9 @@ python sasmerge --help
 * math    
 * scipy
 * sys
-* time   
+* time
+
+these can usually be added to your python environment by installing pip and running, e.g., pip install numpy (or pip3 install numpy)    
 
 ## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
