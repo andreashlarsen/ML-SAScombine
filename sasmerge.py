@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ###########################
-# SASmerge version beta0.5
+# SASmerge version beta0.7
 ###########################
 
 ## importing python packages
@@ -159,11 +159,16 @@ if __name__ == "__main__":
         print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\"")
         sys.exit(1)
 
+    if len(data) == 1:
+        print("ERROR: only 1 dataset, need at least 2. Try with option -d \"data1.dat data2.dat\"")
+        sys.exit(1)
+
     ## labels
     if label_in == "none":
         labels = []
         for l in data:
-            labels.append(l.split('.')[0])
+            tmp = l.split('.')[0]
+            labels.append(tmp.split('/')[-1])
     else:
         labels = label_in.split(' ')
     ms = 4 # markersize in plots
@@ -308,10 +313,8 @@ if __name__ == "__main__":
                 printt('Output directory %s already existed - delete old directory and created new' % exp_dir)
 
         ## merge data
-        q_sum,I_sum,w_sum = np.zeros(N_merge),np.zeros(N_merge),np.zeros(N_merge)
+        q_sum,I_sum,w_sum = np.zeros(N_merge+1),np.zeros(N_merge+1),np.zeros(N_merge+1)
         chi2r_list = []
-        #if RANGE:
-        #    qmin_list,qmax_list = [],[]
         if SCALE_OUTPUT:
             a_list,b_list = [],[]
         for datafile,label in zip(data,labels):
@@ -326,9 +329,6 @@ if __name__ == "__main__":
                             filename = '%s%s%s' % (path,datafile,extension)
             header,footer = get_header_footer(filename)
             q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
-            #if RANGE:
-            #    qmin_list.append(np.amin(q_in))
-            #    qmax_list.append(np.amax(q_in))
             idx = np.where(q_in<=qmax)
             q,I,dI = q_in[idx],I_in[idx],dI_in[idx]
             M = len(q)            
@@ -397,7 +397,7 @@ if __name__ == "__main__":
 
             ## export data
             if EXPORT:
-                filename_scaled = "%s/%s_scaled.dat" % (exp_dir,datafile)
+                filename_scaled = "%s/%s_scaled.dat" % (exp_dir,label)
                 with open(filename_scaled,'w') as f:
                     f.write('scaled and subtraced version of %s\n' % filename)
                     f.write('scaled to align with %s\n' % ref_data)
@@ -424,25 +424,11 @@ if __name__ == "__main__":
                 if EXPORT:
                     printt('Scaled and subtracted data written to file: %s' % filename_scaled)
 
-        #if RANGE:
-        #    # sort qmin and qmax lists
-        #    qmin_list.sort()
-        #    qmax_list.sort()
-        #    # find qmin and qmax with at least 2 datasets
-        #    qmin_global,qmax_global = qmin_list[1],qmax_list[-2]
-
         ## weighted averages
         idx = np.where(w_sum>0.0)   
         q_merge = q_sum[idx]/w_sum[idx]
         I_merge = I_sum[idx]/w_sum[idx]
         dI_merge = w_sum[idx]**-0.5
-
-        ### truncate to qmin and qmax with at least 2 datasets
-        #if RANGE:
-        #    idx = np.where((q_merge >= qmin_global) & (q_merge <= qmax_global))
-        #    dI_merge = dI_merge[idx]
-        #    q_merge = q_merge[idx]
-        #    I_merge = I_merge[idx]
 
         #if not (PLOT_ALL or PLOT_NONE):
         if not PLOT_NONE:

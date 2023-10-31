@@ -130,8 +130,10 @@ def get_header_footer(file):
     return header,footer
 
 def find_qmin_qmax(path,data,extension,RANGE):
-    #qmin_data = 99
-    #qmax_data = 0
+    """
+    find minimum and maximum q of a set of data
+    if RANGE, then find second smallest/largest qmin/qmax
+    """
     qmin_list,qmax_list = [],[]
     for datafile in data:
         filename = '%s%s%s' % (path,datafile,extension)
@@ -148,10 +150,6 @@ def find_qmin_qmax(path,data,extension,RANGE):
 
         qmin_list.append(np.amin(q))
         qmax_list.append(np.amax(q))
-        #if np.amin(q) < qmin_data:
-        #    qmin_data = np.amin(q)
-        #if np.amax(q) > qmax_data:
-        #    qmax_data = np.amax(q)
     if RANGE:
         qmin_list.sort()
         qmax_list.sort()
