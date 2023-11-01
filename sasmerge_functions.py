@@ -98,6 +98,7 @@ def get_header_footer(file):
     j = 0
     while CONTINUE_H or CONTINUE_F:
         line_h = lines[j]
+        #print(line_h)
         line_f = lines[-1-j]
         tmp_h = line_h.split()
         tmp_f = line_f.split()
@@ -107,6 +108,9 @@ def get_header_footer(file):
                 1/float(tmp_h[i]) # divide to ensure non-zero values
                 if np.isnan(float(tmp_h[i])):
                     NAN = 1
+            if not tmp_h:
+                NAN = 1 #empty line
+
             if NAN:
                 header+=1
             else:
@@ -119,6 +123,9 @@ def get_header_footer(file):
                 1/float(tmp_f[i]) # divide to ensure non-zero values
                 if np.isnan(float(tmp_f[i])):
                     NAN = 1
+            if not tmp_h:
+                NAN = 1 #empty line
+                
             if NAN:
                 footer+=1
             else:   
@@ -147,7 +154,6 @@ def find_qmin_qmax(path,data,extension,RANGE):
                         filename = '%s%s%s' % (path,datafile,extension)
         header,footer = get_header_footer(filename)
         q,I,dI = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
-
         qmin_list.append(np.amin(q))
         qmax_list.append(np.amax(q))
     if RANGE:
@@ -173,3 +179,17 @@ def add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_edges):
         q_sum[idx] += w[j]*q[j]
         I_sum[idx] += w[j]*I_fit[j]
         w_sum[idx] += w[j] 
+
+def append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_edges):
+    M = len(q)
+    j = 0    
+    w = dI_fit**-2
+    for j in range(M):
+        try:
+            idx = np.where(q_edges<q[j])[0][-1]
+        except:
+            idx = 0
+        q_matrix[idx].append(q[j])
+        I_matrix[idx].append(I_fit[j])
+        dI_matrix[idx].append(dI_fit[j])
+        w_matrix[idx].append(w[j]) 
