@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ###########################
-# SASmerge version beta0.7
+# SASmerge version beta0.8
 ###########################
 
 ## importing python packages
@@ -80,7 +80,8 @@ if __name__ == "__main__":
     parser.add_argument("-nl", "--no_log_q", action="store_false", help="make the merged data equispaced on lin-scale (instead of on log-scale which is default)",default=True)
     parser.add_argument("-exp", "--export", action="store_true", help="export scaled and subtracted curves", default=False)
     parser.add_argument("-res", "--res", action="store_true", help="export file with residuals", default=False)
-    
+    parser.add_argument("-ft", "--ftest", action="store_true", help="Make F-test for error consistency",default=False)
+
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
     parser.add_argument("-pn", "--plot_none", action="store_true", help="Plot nothing", default=False)
@@ -121,6 +122,7 @@ if __name__ == "__main__":
     qmax_ref = float(args.qmax_ref)
     exclude_in = args.exclude
     conv_threshold = float(args.conv_crit) 
+    F_TEST = args.ftest
 
     ## convert data string to list and remove empty entries
     try:
@@ -313,7 +315,10 @@ if __name__ == "__main__":
                 printt('Output directory %s already existed - delete old directory and created new' % exp_dir)
 
         ## merge data
-        q_sum,I_sum,w_sum = np.zeros(N_merge+1),np.zeros(N_merge+1),np.zeros(N_merge+1)
+        n = N_merge+1
+        q_sum,I_sum,w_sum = np.zeros(n),np.zeros(n),np.zeros(n)
+        if F_TEST:
+            q_matrix,I_matrix,dI_matrix,w_matrix = [[] for x in range(n)],[[] for x in range(n)],[[] for x in range(n)],[[] for x in range(n)]
         chi2r_list = []
         if SCALE_OUTPUT:
             a_list,b_list = [],[]
@@ -406,6 +411,8 @@ if __name__ == "__main__":
                         f.write('%e %e %e\n' % (q_i,I_i,dI_i))
                     
             add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_edges)
+            if F_TEST: 
+                append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_edges)
 
             #if not (PLOT_ALL or PLOT_NONE):
             if not PLOT_NONE:
@@ -430,6 +437,32 @@ if __name__ == "__main__":
         I_merge = I_sum[idx]/w_sum[idx]
         dI_merge = w_sum[idx]**-0.5
 
+        if F_TEST:
+            F_c = 20 # critical F value
+            count_err,count_fine,j = 0,0,0
+            for i in range(n):
+                ni = len(q_matrix[i])
+                if ni != 0:
+                    sd = np.std(I_matrix[i])
+                    se = sd/np.sqrt(ni)
+                    sig = np.sqrt(np.mean(np.array(dI_matrix[i])**2))
+                    sig_mean = sig/np.sqrt(ni)
+                    sig_ml = w_sum[i]**-0.5 # sigma using maximum likelihood
+                    qi = np.mean(np.array(q_matrix[i]))
+                    F = se/sig_ml
+                    if F > F_c:
+                        if VERBOSE:
+                            printt('WARNING: data at q: %1.1e, may not be compatible as std_error/maximum_likelihood_error = %1.2f > %d)' %(qi,F,F_c))
+                        #dI_merge[j] = sig_mean
+                        count_err += 1
+                    else:
+                        count_fine += 1
+                    j += 1
+
+            if count_err > 0 and VERBOSE:
+                printt('Number of points with very large (more than x' + str(F_c) + ' larger) standard error compared to maximum likelihood error: ' + str(count_err) + ', points with OK errors: ' + str(count_fine))
+                #printt('Using sum of squares error propagation instead of maximum likelihood error propagation for the points with too small error')
+   
         #if not (PLOT_ALL or PLOT_NONE):
         if not PLOT_NONE:
             if PLOT_MERGE:
