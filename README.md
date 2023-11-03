@@ -14,6 +14,9 @@ see dependencies
 ### standard run for merging 3 datasets
 python sacombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
 
+### alternative combning the same data, using --path and --ext options (using all data in the folder provided by --path, with extension .dat)
+python sacombine.py --path example_data --ext dat --title my_combined_data
+
 ### for instructions and options, type: 
 python sascombine.py --help
 
