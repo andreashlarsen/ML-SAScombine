@@ -1,26 +1,26 @@
-# SASmerge
-version beta0.8
+# SAScombine
+version beta0.9
 
-SASmerge merges SAS data into a merged consensus dataset   
+SAScombine combines multiple SAS data into a combined consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
 
 ## Download
-sasmerge is a python3 program, so you need python3    
-download sasmerge.py and the other python scripts in this repository       
+sascombine is a python3 program, so you need python3    
+download sascombine.py and the other python scripts in this repository       
 see dependencies  
 
 ## Run  
 
 ### standard run for merging 3 datasets
-python sasmerge.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_merged_data
+python sacombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
 
 ### for instructions and options, type: 
-python sasmerge --help
+python sascombine.py --help
 
 ## Dependencies
 
 ### dependencies from this folder:     
-* sasmerge_functions.py  
+* sascombine_functions.py  
 
 ### other dependencies (standard python packages):   
 * argparse     
@@ -37,7 +37,7 @@ these can usually be added to your python environment by installing pip and runn
 
 ## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
-* sasmerge can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
+* sascombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
 
 ## Credit
 The program was written by Andreas Haahr Larsen   
