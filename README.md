@@ -17,7 +17,7 @@ python sacombine.py --path example_data/ --data "dataset1.dat dataset2.dat datas
 #### alternative command for combining the 3 datasets
 python sacombine.py --path example_data --ext dat --title my_combined_data
 
-### for instructions and options, type: 
+#### instructions and options
 python sascombine.py --help
 
 ## Dependencies
