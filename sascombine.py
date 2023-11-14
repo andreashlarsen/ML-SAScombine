@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-
 #############################
 # SAScombine, version:
-version = 'beta0.9'
+version = 'beta0.11'
 #############################
 
 ## importing python packages
@@ -61,40 +60,42 @@ if __name__ == "__main__":
     ## input values
 
     # presentation
-    parser = argparse.ArgumentParser(description="""SAScombine - combine multiple SAXS or SANS datasets into one dataset""",usage="python sascombine.py -d \"data1.dat data2.dat data3.dat\" <OPTIONAL ARGUMENTS>" )
+    parser = argparse.ArgumentParser(description="""SAScombine - combining SAXS or SANS data using maximum likelihood""",usage="python sascombine.py -d \"data1.dat data2.dat data3.dat\" <OPTIONAL ARGUMENTS>" )
 
     # options with input
     parser.add_argument("-d", "--data", help="Datafiles (format: \"d1.dat d2.dat\"). Include path and file extension or use --path and --ext flags.")
     parser.add_argument("-p", "--path", help="Add this path to all data", default="./")
     parser.add_argument("-ext", "--ext", help="Add this extension to all data. If --data is not provided, all files with this extension will be used.", default="")
     parser.add_argument("-l", "--label", help="Labels for each datafile (separated by space)", default="none")
-    parser.add_argument("-qmin", "--qmin", help="minimum q-value in merged file", default="none")
-    parser.add_argument("-qmax", "--qmax", help="maximum q-value in merged file", default="none")
-    parser.add_argument("-N", "--N", type=int, help="Maximum Number of points in merged data", default="500")
-    parser.add_argument("-t", "--title", help="plot title, also used for output name [recommended]",default='Merged')
-    parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included in merged data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
+    parser.add_argument("-qmin", "--qmin", help="minimum q-value in combined data file", default="none")
+    parser.add_argument("-qmax", "--qmax", help="maximum q-value in combined data file", default="none")
+    parser.add_argument("-N", "--N", type=int, help="Maximum Number of points in combined data", default="500")
+    parser.add_argument("-t", "--title", help="plot title, also used for output name [recommended]",default='Combined data')
+    parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included in combined data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
     parser.add_argument("-qmin_ref", "--qmin_ref", help="Provide a min q to use in reference data, for alignment [default: 0]", default="0")
     parser.add_argument("-qmax_ref", "--qmax_ref", help="Provide a max q to use in reference data, for alignment [default: no max value]", default="9999")
     parser.add_argument("-exc", "--exclude", help="Exclude one or more datasets from list. list of integers with ",default="none")
     parser.add_argument("-cc", "--conv_crit", help="Convergence criteria change of chi-square [default: 0.0001]",default="0.0001")
+    parser.add_argument("-qtemp", "--q_template", help="Provide file for q template (only using first column of file) [default: no template used]", default="none")
     
     # true/false options
-    parser.add_argument("-r", "--range", action="store_true", help="only include q range with overlap of min 2 datasets",default=False)
-    parser.add_argument("-rs", "--ref_smooth", action="store_true", help="smooth reference curve before alignment [not recommended]", default=False)
-    parser.add_argument("-nc", "--no_conv", action="store_false", help="do not continue iteratively until convergence", default=True)
-    parser.add_argument("-nn", "--no_normalize", action="store_false", help="do not normalize merged dataset", default=True)
-    parser.add_argument("-sc", "--output_scale", action="store_true", help="output scale factors and constant adjustments", default=False)
-    parser.add_argument("-nl", "--no_log_q", action="store_false", help="make the merged data equispaced on lin-scale (instead of on log-scale which is default)",default=True)
-    parser.add_argument("-exp", "--export", action="store_true", help="export scaled and subtracted curves", default=False)
-    parser.add_argument("-res", "--res", action="store_true", help="export file with residuals", default=False)
+    parser.add_argument("-r", "--range", action="store_true", help="Only include q range with overlap of min 2 datasets",default=False)
+    parser.add_argument("-rs", "--ref_smooth", action="store_true", help="Smooth reference curve before alignment [not recommended]", default=False)
+    parser.add_argument("-nc", "--no_conv", action="store_true", help="Do not continue iteratively until convergence", default=False)
+    parser.add_argument("-nn", "--no_normalize", action="store_true", help="Do not normalize combined dataset", default=False)
+    parser.add_argument("-sc", "--output_scale", action="store_true", help="Output scale factors and constant adjustments", default=False)
+    parser.add_argument("-nl", "--no_log_q", action="store_true", help="Make the combined data evenly distributed on lin scale (instead of on log scale)",default=False)
+    parser.add_argument("-exp", "--export", action="store_true", help="Export scaled and subtracted curves", default=False)
+    parser.add_argument("-res", "--res", action="store_true", help="Export file with residuals", default=False)
     parser.add_argument("-ft", "--ftest", action="store_true", help="Make F-test for error consistency",default=False)
+    parser.add_argument("-equi", "--q_equispaced", action="store_true", help="Equispaced q (do not use weighted average for q in combined data)",default=False)
 
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
     parser.add_argument("-pn", "--plot_none", action="store_true", help="Plot nothing", default=False)
-    parser.add_argument("-pm", "--no_plot_merge", action="store_false", help="Do not plot the merged data (only the scaled datasets)", default=True)
-    parser.add_argument("-err", "--error_bars", action="store_true", help="plot errorbars in all plots [may not work well for many datasets]", default=False)
-    parser.add_argument("-lin", "--plot_lin", action="store_true", help="plot on lin-log scale (instead of log-log)", default=False)
+    parser.add_argument("-pm", "--no_plot_merge", action="store_false", help="Do not plot the combined data (only the scaled datasets)", default=True)
+    parser.add_argument("-err", "--error_bars", action="store_true", help="Plot errorbars in all plots [may not work well for many datasets]", default=False)
+    parser.add_argument("-lin", "--plot_lin", action="store_true", help="Plot on lin-log scale (instead of log-log)", default=False)
     parser.add_argument("-sp", "--save_plot", action="store_true", help="Save pdf of plot", default=False)
     #parser.add_argument("-v", "--verbose", action="store_true", help="verbose: more output [default True]", default=True)
 
@@ -104,32 +105,20 @@ if __name__ == "__main__":
     data_in = args.data
     path = args.path
     extension = args.ext
-    label_in = args.label
-    qmin_in = args.qmin
-    qmax_in = args.qmax
     N_merge = args.N
-    LOG_Q = args.no_log_q
     PLOT_ALL   = args.plot_all
     PLOT_NONE = args.plot_none
     SAVE_PLOT  = args.save_plot
     PLOT_MERGE = args.no_plot_merge
     EXPORT = args.export
-    RES = args.res
-    PLOT_LIN = args.plot_lin
-    title = args.title
-    RANGE = args.range
+    title = args.title.replace(' ','_')
     ref_data_in = args.ref
-    SMOOTH = args.ref_smooth
-    CONV = args.no_conv
-    ERRORBAR = args.error_bars
     VERBOSE = True #VERBOSE = args.verbose
-    NORM = args.no_normalize
-    SCALE_OUTPUT = args.output_scale
     qmin_ref = float(args.qmin_ref)
     qmax_ref = float(args.qmax_ref)
     exclude_in = args.exclude
     conv_threshold = float(args.conv_crit) 
-    F_TEST = args.ftest
+    q_temp_data_in = args.q_template
 
     # Join the script name and arguments into a single string
     script_name = sys.argv[0]
@@ -178,35 +167,39 @@ if __name__ == "__main__":
         sys.exit(1)
 
     ## labels
-    if label_in == "none":
+    if args.label == "none":
         labels = []
         for l in data:
             tmp = l.split('.')[0]
             labels.append(tmp.split('/')[-1])
     else:
-        labels = label_in.split(' ')
+        labels = args.label.split(' ')
     ms = 4 # markersize in plots
 
     ## determine qmin and qmax
-    qmin_data,qmax_data = find_qmin_qmax(path,data,extension,RANGE)
-    if qmin_in == "none":
+    qmin_data,qmax_data = find_qmin_qmax(path,data,extension,args.range)
+    if args.qmin == "none":
         qmin = qmin_data
     else:
-        qmin = float(qmin_in)
+        qmin = float(args.qmin)
         if qmin_data > qmin:
             qmin = qmin_data
-    if qmax_in == "none":
+    if args.qmax == "none":
         qmax = qmax_data
     else:
-        qmax = float(qmax_in)
+        qmax = float(args.qmax)
         if qmax_data < qmax:
             qmax = qmax_data
 
     ## make q
-    if LOG_Q:
-        q_edges = 10**np.linspace(np.log10(qmin),np.log10(qmax),N_merge+1)
+    if not q_temp_data_in == "none":
+        header,footer = get_header_footer(q_temp_data_in)
+        q_temp = np.genfromtxt(q_temp_data_in,skip_header=header,skip_footer=footer,usecols=[0],unpack=True)
+        N_merge = len(q_temp)
+    elif args.no_log_q:
+        q_temp = np.linspace(qmin,qmax,N_merge)
     else:
-        q_edges = np.linspace(qmin,qmax,N_merge+1)
+        q_temp = 10**np.linspace(np.log10(qmin),np.log10(qmax),N_merge)
 
     ## filename and folder for output
     merge_dir = 'output_%s' % title
@@ -276,14 +269,17 @@ if __name__ == "__main__":
     printt('#########################################')
 
     ## print input values
-    printt('data :')
+    printt('data:')
     for name in data:
         printt('       %s' % name)
-    printt('qmin : %f' % qmin)
-    printt('qmax : %f' % qmax)
-    printt('N_max: %d' % N_merge)
+    printt('qmin: %f' % qmin)
+    printt('qmax: %f' % qmax)
+    if not q_temp_data_in == "none":
+        printt('q template: %s' % q_temp_data_in)
+    else:
+        printt('N_max: %d' % N_merge)
     printt('ref  : %s' % ref_data_list[0])
-    if CONV:
+    if not args.no_conv:
         imax = 30
         for i in range(imax+1):
             ref_data_list.append(filename_out)
@@ -296,7 +292,7 @@ if __name__ == "__main__":
         VERBOSE = False
         printt('The results are independent on the choise of reference curve, unless --no_conv is used')
 
-    if RES:
+    if args.res:
        res_dir = '%s/residuals' % merge_dir
        os.mkdir(res_dir)
 
@@ -305,9 +301,8 @@ if __name__ == "__main__":
     for ref_data in ref_data_list:
 
         ## initialize figure
-        #if not (PLOT_NONE or PLOT_ALL):
         if not PLOT_NONE:
-            fig,ax = plt.subplots(figsize=(10,10))
+            fig,ax = plt.subplots(figsize=(12,6))
 
         ## import reference data
         header,footer = get_header_footer(ref_data)
@@ -316,7 +311,7 @@ if __name__ == "__main__":
             idx = np.where((q_ref <= qmax_ref) & (q_ref >= qmin_ref))
             q_ref,I_ref = q_ref[idx],I_ref[idx]
 
-        if SMOOTH:
+        if args.ref_smooth:
             N_sm = np.amax([ceil(len(q_ref)/50),1])
             I_ref = smooth(I_ref,N_sm,'lin')
 
@@ -330,12 +325,11 @@ if __name__ == "__main__":
                 printt('Output directory %s already existed - delete old directory and created new' % exp_dir)
 
         ## merge data
-        n = N_merge+1
-        q_sum,I_sum,w_sum = np.zeros(n),np.zeros(n),np.zeros(n)
-        if F_TEST:
-            q_matrix,I_matrix,dI_matrix,w_matrix = [[] for x in range(n)],[[] for x in range(n)],[[] for x in range(n)],[[] for x in range(n)]
+        q_sum,I_sum,w_sum = np.zeros(N_merge),np.zeros(N_merge),np.zeros(N_merge)
+        if args.ftest:
+            q_matrix,I_matrix,dI_matrix,w_matrix = [[] for x in range(N_merge)],[[] for x in range(N_merge)],[[] for x in range(N_merge)],[[] for x in range(N_merge)]
         chi2r_list = []
-        if SCALE_OUTPUT:
+        if args.output_scale:
             a_list,b_list = [],[]
         for datafile,label in zip(data,labels):
             filename = '%s%s%s' % (path,datafile,extension)
@@ -371,14 +365,14 @@ if __name__ == "__main__":
             I_in_fit = (I_in-b)/a
             dI_fit = dI/a 
             dI_in_fit = dI_in/a 
-            if SCALE_OUTPUT:
+            if args.output_scale:
                 a_list.append(1/a)
                 b_list.append(-b/a) 
 
-            if CONV:
-                fit_data = 'merged data'
-            else:
+            if args.no_conv:
                 fit_data = 'reference data'
+            else:
+                fit_data = 'combined data'
 
             ## plot interpolation
             if PLOT_ALL and not PLOT_NONE:
@@ -408,7 +402,7 @@ if __name__ == "__main__":
                     figa.savefig('%s/fit_%s' % (merge_dir,label))
             
             ## export residuals etc
-            if RES:
+            if args.res:
                 with open('%s/fit_res_%s.dat' % (res_dir,label),'w') as f:
                     f.write('# fit %s with %s, chi2r = %1.2f\n' % (label,fit_data,chi2r))
                     f.write('%-14s %-14s %-14s %-14s %-20s\n' % ('# q','  I','  sigma','  Ifit','  R = (I-Ifit)/sig'))
@@ -425,13 +419,12 @@ if __name__ == "__main__":
                     for  q_i,I_i,dI_i in zip(q,I_fit,dI_fit):
                         f.write('%e %e %e\n' % (q_i,I_i,dI_i))
                     
-            add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_edges)
-            if F_TEST: 
-                append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_edges)
+            add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_temp)
+            if args.ftest: 
+                append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_temp)
 
-            #if not (PLOT_ALL or PLOT_NONE):
             if not PLOT_NONE:
-                if ERRORBAR:
+                if args.error_bars:
                     ax.errorbar(q_in,I_in_fit,yerr=dI_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
                 else:
                     ax.plot(q_in,I_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
@@ -448,11 +441,14 @@ if __name__ == "__main__":
 
         ## weighted averages
         idx = np.where(w_sum>0.0)   
-        q_merge = q_sum[idx]/w_sum[idx]
+        if args.q_equispaced or not q_temp_data_in == "none":
+            q_merge = q_temp[idx]
+        else:
+            q_merge = q_sum[idx]/w_sum[idx]
         I_merge = I_sum[idx]/w_sum[idx]
         dI_merge = w_sum[idx]**-0.5
 
-        if F_TEST:
+        if args.ftest:
             F_c = 20 # critical F value
             count_err,count_fine,j = 0,0,0
             for i in range(n):
@@ -478,23 +474,22 @@ if __name__ == "__main__":
                 printt('Number of points with very large (more than x' + str(F_c) + ' larger) standard error compared to maximum likelihood error: ' + str(count_err) + ', points with OK errors: ' + str(count_fine))
                 #printt('Using sum of squares error propagation instead of maximum likelihood error propagation for the points with too small error')
    
-        #if not (PLOT_ALL or PLOT_NONE):
         if not PLOT_NONE:
             if PLOT_MERGE:
-                if ERRORBAR:
-                    ax.errorbar(q_merge,I_merge,yerr=dI_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
+                if args.error_bars:
+                    ax.errorbar(q_merge,I_merge,yerr=dI_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Combined data')
                 else:
-                    ax.plot(q_merge,I_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Merged')
+                    ax.plot(q_merge,I_merge,linestyle='none',marker='.',markersize=ms,color='black',zorder=1,label='Combined data')
 
-        if NORM:
+        if not args.no_normalize:
             ## normalize before export
-            I_merge = I_merge - np.min(I_merge) + 1e-3 #ensures all points are positive and add background
+            I_merge = I_merge - np.min(I_merge) + 1e-3 #ensures all points are positive and then add constant background
             I0 = np.mean(I_merge[0:4])
             I_merge /= I0
             dI_merge /= I0
         
         with open(filename_out,'w') as f:
-            f.write('#sample: %s\n' % title)
+            f.write('# sample: %s\n' % args.title)
             f.write('# data\n')
             for dataname in data:
                 f.write('# %s\n' % (dataname))
@@ -503,10 +498,9 @@ if __name__ == "__main__":
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
 
         ## figure settings
-        #if not (PLOT_ALL or PLOT_NONE):
         if not PLOT_NONE:
-            ax.set_title(title)
-            if not PLOT_LIN:
+            ax.set_title(args.title)
+            if not args.plot_lin:
                 ax.set_xscale('log')
                 xmin = qmin * 0.5
             else:
@@ -531,20 +525,20 @@ if __name__ == "__main__":
         except: 
             STOP = False
 
-        if CONV:
+        if not args.no_conv:
             if STOP_NEXT:
                 printt('#########################################')
                 printt('Converged after %d iterations' % count)
-                printt('N in merged data: %d' % len(idx[0]))
-                if RANGE:
+                printt('N in combined data: %d' % len(idx[0]))
+                if args.range:
                     printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin,qmax))
-                printt('Merged data written to file: %s' % filename_out)
+                printt('Combined data written to file: %s' % filename_out)
                 if qmin_ref != 0 or qmax_ref != 9999:
-                    printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                    printt('Data sorted after compatibility with combined consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
                 else:
-                    printt('Data sorted after compatibility with merged consensus curve:')
+                    printt('Data sorted after compatibility with combined consensus curve:')
                 for i in np.argsort(chi2r_list):
-                    if SCALE_OUTPUT:
+                    if args.output_scale:
                         printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                     else:
                         printt('%20s: %1.2f' % (data[i],chi2r_list[i]))
@@ -579,29 +573,29 @@ if __name__ == "__main__":
 
         ## output
         if VERBOSE:
-            if CONV:
+            if not args.no_conv:
                 if count > imax:
                     printt('#########################################')
                     printt('Max number of iterations reached (imax = %d)' % imax)
-                    printt('N in merged data: %d' % len(idx[0]))
-                    if RANGE:
+                    printt('N in combined data: %d' % len(idx[0]))
+                    if args.range:
                         printt('q range with at least 2 overlapping data curves: [%1.4f,%1.2f]' % (qmin,qmax))
-                    printt('Merged data written to file: %s' % filename_out)
+                    printt('Combined data written to file: %s' % filename_out)
                     if qmin_ref != 0 or qmax_ref != 9999:
-                        printt('Data sorted after compatibility with merged consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
+                        printt('Data sorted after compatibility with combined consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
                     else:
-                        printt('Data sorted after compatibility with merged consensus curve:')
+                        printt('Data sorted after compatibility with combined consensus curve:')
                         printt('Data   chi2r')
                     for i in np.argsort(chi2r_list):
-                        if SCALE_OUTPUT:
+                        if args.output_scale:
                             printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
                         else:
                             printt('%20s: %1.2f' % (data[i],chi2r_list[i]))
                     printt('%20s: %1.2f' % ('sum',np.sum(chi2r_list)))
             else:
                     printt('#########################################')
-                    printt('N in merged data: %d' % len(idx[0]))
-                    printt('Merged data written to file: %s' % filename_out)
+                    printt('N in combined data: %d' % len(idx[0]))
+                    printt('Combined data written to file: %s' % filename_out)
 
     end_time =  time.time() - t_start   
     printt('#########################################')

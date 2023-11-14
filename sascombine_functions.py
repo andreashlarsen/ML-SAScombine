@@ -181,34 +181,28 @@ def find_qmin_qmax(path,data,extension,RANGE):
 
     return qmin,qmax
 
-def add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_edges):
+def add_data(q_sum,I_sum,w_sum,q,I_fit,dI_fit,q_temp):
     """
     add data to a sum of data
     """
-    M = len(q)
-    j = 0    
     w = dI_fit**-2
-    for j in range(M):
-        try:
-            idx = np.where(q_edges<q[j])[0][-1]
-        except:
-            idx = 0
+    for j in range(len(q)):
+        differences = np.abs(np.array(q_temp) - q[j])
+        idc = np.where(differences == np.min(differences))[0]
+        idx = idc[0]
         q_sum[idx] += w[j]*q[j]
         I_sum[idx] += w[j]*I_fit[j]
         w_sum[idx] += w[j] 
 
-def append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_edges):
+def append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_temp):
     """
     append another dataset to a matrix with data, sorted after q-values
     """
-    M = len(q)
-    j = 0    
     w = dI_fit**-2
-    for j in range(M):
-        try:
-            idx = np.where(q_edges<q[j])[0][-1]
-        except:
-            idx = 0
+    for j in range(len(q)):
+        differences = np.abs(np.array(q_temp) - q[j])
+        idc = np.where(differences == np.min(differences))[0]
+        idx = idc[0]
         q_matrix[idx].append(q[j])
         I_matrix[idx].append(I_fit[j])
         dI_matrix[idx].append(dI_fit[j])
