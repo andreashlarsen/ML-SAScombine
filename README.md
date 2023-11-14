@@ -1,5 +1,5 @@
 # SAScombine
-version beta0.9
+version beta0.11
 
 SAScombine combines multiple SAS data into a combined consensus dataset   
 e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
