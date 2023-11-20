@@ -2,7 +2,7 @@
 
 #############################
 # SAScombine, version:
-version = 'beta0.11'
+version = 'beta0.12'
 #############################
 
 ## importing python packages
@@ -77,6 +77,8 @@ if __name__ == "__main__":
     parser.add_argument("-exc", "--exclude", help="Exclude one or more datasets from list. list of integers with ",default="none")
     parser.add_argument("-cc", "--conv_crit", help="Convergence criteria change of chi-square [default: 0.0001]",default="0.0001")
     parser.add_argument("-qtemp", "--q_template", help="Provide file for q template (only using first column of file) [default: no template used]", default="none")
+    parser.add_argument("-qmin_all", "--qmin_all", help="Provide individual qmin values for all data (format: \"0.02 0.001\")",default="none")
+    parser.add_argument("-qmax_all", "--qmax_all", help="Provide individual qmax values for all data (format: \"0.3 1.0\")",default="none")
     
     # true/false options
     parser.add_argument("-r", "--range", action="store_true", help="Only include q range with overlap of min 2 datasets",default=False)
@@ -89,6 +91,7 @@ if __name__ == "__main__":
     parser.add_argument("-res", "--res", action="store_true", help="Export file with residuals", default=False)
     parser.add_argument("-ft", "--ftest", action="store_true", help="Make F-test for error consistency",default=False)
     parser.add_argument("-equi", "--q_equispaced", action="store_true", help="Equispaced q (do not use weighted average for q in combined data)",default=False)
+    parser.add_argument("-base", "--logbase", help="base for logarithmic rebinning (default: 1.05)",default=1.05)
 
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
@@ -175,7 +178,7 @@ if __name__ == "__main__":
     else:
         labels = args.label.split(' ')
     ms = 4 # markersize in plots
-
+    
     ## determine qmin and qmax
     qmin_data,qmax_data = find_qmin_qmax(path,data,extension,args.range)
     if args.qmin == "none":
@@ -190,6 +193,16 @@ if __name__ == "__main__":
         qmax = float(args.qmax)
         if qmax_data < qmax:
             qmax = qmax_data
+
+    ## individual qmin and qmax values
+    if args.qmin_all == "none":
+        qmin_all = np.ones(len(data))*qmin
+    else:
+        qmin_all = [float(num) for num in args.qmin_all.split(' ')]
+    if args.qmax_all == "none":
+        qmax_all = np.ones(len(data))*qmax
+    else:
+        qmax_all = [float(num) for num in args.qmax_all.split(' ')]    
 
     ## make q
     if not q_temp_data_in == "none":
@@ -324,14 +337,14 @@ if __name__ == "__main__":
                 os.mkdir(exp_dir)
                 printt('Output directory %s already existed - delete old directory and created new' % exp_dir)
 
-        ## merge data
+        ## combine data
         q_sum,I_sum,w_sum = np.zeros(N_merge),np.zeros(N_merge),np.zeros(N_merge)
         if args.ftest:
             q_matrix,I_matrix,dI_matrix,w_matrix = [[] for x in range(N_merge)],[[] for x in range(N_merge)],[[] for x in range(N_merge)],[[] for x in range(N_merge)]
         chi2r_list = []
         if args.output_scale:
             a_list,b_list = [],[]
-        for datafile,label in zip(data,labels):
+        for datafile,label,qmin_i,qmax_i in zip(data,labels,qmin_all,qmax_all):
             filename = '%s%s%s' % (path,datafile,extension)
             if not os.path.exists(filename):
                 filename = '%s/%s%s' % (path,datafile,extension)
@@ -343,14 +356,16 @@ if __name__ == "__main__":
                             filename = '%s%s%s' % (path,datafile,extension)
             header,footer = get_header_footer(filename)
             q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
-            idx = np.where(q_in<=qmax)
+            qmin_global = np.amax([qmin,qmin_i])
+            qmax_global = np.amin([qmax,qmax_i])
+            idx = np.where((q_in >= qmin_global) & (q_in <= qmax_global))
             q,I,dI = q_in[idx],I_in[idx],dI_in[idx]
             M = len(q)            
 
             ## truncate data (only for scaling), to have same q-range as ref data
             q_t,I_t,dI_t = trunc(q,I,dI,q_ref)
 
-            ## fit ref data to truncated) data 
+            ## fit ref data to truncated data 
             I_interp_fit,popt = fit_scale_offset(q_t,I_t,dI_t,q_ref,I_ref)
 
             ## calc residuals and chi2r
@@ -423,11 +438,13 @@ if __name__ == "__main__":
             if args.ftest: 
                 append_data(q_matrix,I_matrix,dI_matrix,w_matrix,q,I_fit,dI_fit,q_temp)
 
+            ## plot data
             if not PLOT_NONE:
                 if args.error_bars:
                     ax.errorbar(q_in,I_in_fit,yerr=dI_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
                 else:
-                    ax.plot(q_in,I_in_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=0)
+                    ax.plot(q,I_fit,marker='.',markersize=ms,linestyle='none',label=label,zorder=1)
+                    ax.plot(q_in,I_in_fit,marker='.',markersize=ms,linestyle='none',zorder=0,color=ax.get_lines()[-1].get_color(),alpha=0.2)
 
             ## output
             if VERBOSE:
