@@ -1,29 +1,29 @@
-# SAScombine
+# ML-SAScombine
 version beta0.12
 
-SAScombine combines multiple SAS data into a combined consensus dataset   
-e.g. data measured on different instruments on the same sample or SAXS and WAXS data    
+ML-SAScombine use a maximum likelihood (ML) approach to combines multiple small-angle scattering (SAS) datasets into a consensus dataset   
+The input could be, e.g., data measured on different instruments on the same sample or SAXS and WAXS data (Trewhella, Vachette, Larsen 2024, in prep)   
 
 ## Download
-sascombine is a python3 program, so you need python3    
-download sascombine.py and the other python scripts in this repository       
-see dependencies  
+ML-SAScombine is a python3 program, so you need python3    
+Download mlsascombine.py and the other python scripts in this repository       
+See dependencies  
 
 ## Run  
 
 #### standard run for combining 3 datasets
-python sacombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
+python mlsascombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
 
 #### alternative command for combining the 3 datasets
-python sacombine.py --path example_data --ext dat --title my_combined_data
+python mlsascombine.py --path example_data --ext dat --title my_combined_data
 
 #### instructions and options
-python sascombine.py --help
+python mlsascombine.py --help
 
 ## Dependencies
 
 ### dependencies from this folder:     
-* sascombine_functions.py  
+* mlsascombine_functions.py  
 
 ### other dependencies (standard python packages):   
 * argparse     
@@ -40,7 +40,7 @@ these can usually be added to your python environment by installing pip and runn
 
 ## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
-* sascombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
+* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
 
 ## Credit
 The program was written by Andreas Haahr Larsen   
