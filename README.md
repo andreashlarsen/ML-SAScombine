@@ -1,7 +1,7 @@
 # ML-SAScombine
 version beta0.14
 
-ML-SAScombine apply maximum likelihood (ML) to combines multiple small-angle scattering (SAS) datasets into a consensus dataset   
+ML-SAScombine applies maximum likelihood (ML) to combine multiple small-angle scattering (SAS) datasets into a consensus dataset   
 The input could be, e.g., data measured on different instruments on the same sample or SAXS and WAXS data (Trewhella, Vachette, Larsen 2024, in prep)   
 
 ## Download
