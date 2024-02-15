@@ -1,0 +1,127 @@
+{
+    "moduleid" : "mlsascombine"
+    ,"label"    : "ML-SAScombine"
+    ,"executable"   : "mlsascombine_wrapper.py"
+    ,"submitpolicy" : "all"
+    ,"centeroutput" : "true"
+    ,"fields"   : [
+        {
+            "role"       : "input"
+            ,"id"         : "description_program"
+            ,"label"      : "<p>ML-SAScombine</p><hr>"
+            ,"type"       : "label"
+            ,"colspan"    : 17
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "data"
+            ,"label"      : "Data files (columns: q,I,&sigma;)"
+            ,"type"       : "file"
+            ,"required"   : "true"
+            ,"help"       : "<p>Data files to combine.</p>"
+            ,"multiple"  : "true"
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "title"
+            ,"label"      : "Title"
+            ,"type"       : "text"
+            ,"default"    : "Combined"
+            ,"help"       : "<p>Title of plot and output files.</p>"
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "qmin"
+            ,"label"      : "qmin (optional)"
+            ,"type"       : "float"
+            ,"step"       : 0.001
+            ,"min"        : 0
+            ,"max"        : 10000
+            ,"default"    : 0
+            ,"help"       : "Optionally enter q min - same units as the input data: 1/&Aring; or 1/nm. default is 0 (all points included)."
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "qmax"
+            ,"label"      : "qmax (optional)"
+            ,"type"       : "float"
+            ,"step"       : 1
+            ,"min"        : 0
+            ,"max"        : 10000
+            ,"default"    : 10
+            ,"help"       : "Optionally enter q max - same units the input as data: 1/&Aring; or 1/nm. default is 10 (all points included)."
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "N"
+            ,"label"      : "Max number of points in combined data"
+            ,"type"       : "float"
+            ,"step"       : 100
+            ,"min"        : 1
+            ,"max"        : 10000
+            ,"default"    : 500
+            ,"help"       : "<p>Max number of points in combined data</p>"
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "range"
+            ,"label"      : "Only combine data in range of overlapping data"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+            ,"help"       : "Only combine data in range of overlapping data"
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "error"
+            ,"label"      : "Plot errorbars"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+            ,"help"       : "Plot errorbars"
+        }
+       ,{
+            "role"       : "input"
+            ,"id"         : "plot_lin"
+            ,"label"      : "plot on lin-log scale (instead of log-log)"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+        }
+       ,{
+            "role"       : "input"
+            ,"id"         : "nl"
+            ,"label"      : "Equispaced q"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+            ,"help"       : "Default is equispaced q on log scale. This option makes q equispaced on lin scale."
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "res"
+            ,"label"      : "Export residuals"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+            ,"help"       : "Export residuals from fits between combined data and each input dataset."
+        }
+        ,{
+            "role"       : "input"
+            ,"id"         : "pa"
+            ,"label"      : "Plot all fits"
+            ,"type"       : "checkbox"
+            ,"checked"    : "false"
+            ,"help"       : "Plot individual fits between combined data and each input dataset. Saved in the output zip file."
+        }
+        ,{
+            "role"       : "output"
+            ,"id"         : "zip"
+            ,"label"      : "Results zipped"
+            ,"type"       : "file"
+            ,"help"       : "Results packaged in a zip file"
+        }
+        ,{
+            "role"       : "output"
+            ,"id"         : "combinefig"
+            ,"label"      : ""
+            ,"type"       : "image"
+            ,"width"      : "50%"
+        }
+    ]
+}
