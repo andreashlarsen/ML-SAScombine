@@ -38,6 +38,9 @@ python mlsascombine.py --help
 
 these can usually be added to your python environment by installing pip and running, e.g., pip install numpy (or pip3 install numpy)    
 
+## GUI
+We are working on making a GUI available, hence the folder GUI. However this is not available yet. 
+
 ## Notes  and warnings
 * the program is a beta version - so use it with care. But feedback is more than welcome    
 * ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
