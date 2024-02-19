@@ -42,8 +42,8 @@ these can usually be added to your python environment by installing pip and runn
 We are working on making a GUI available, hence the folder GUI. However this is not available yet. 
 
 ## Notes  and warnings
-* the program is a beta version - so use it with care. But feedback is more than welcome    
-* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors
+* The program is a beta version - so use it with care. Feedback is more than welcome. Preferably via this GitHub page.
+* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.
 
 ## Credit
 The program was written by Andreas Haahr Larsen   
