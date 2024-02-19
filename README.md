@@ -22,7 +22,8 @@ python mlsascombine.py --help
 ## Dependencies
 
 ### dependencies from this folder:     
-* mlsascombine_functions.py  (should be in the same folder as mlsascombine.py)    
+* mlsascombine_functions.py
+(should be in the same folder as mlsascombine.py)    
 
 ### other dependencies (standard python packages):   
 * argparse     
