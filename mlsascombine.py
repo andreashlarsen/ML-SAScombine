@@ -2,7 +2,7 @@
 
 #############################
 # ML-SAScombine, version:
-version = 'beta0.14'
+version = 'beta0.15'
 #############################
 
 ## importing python packages
@@ -503,7 +503,13 @@ if __name__ == "__main__":
 
         if not args.no_normalize:
             ## normalize before export
-            I_merge = I_merge - np.min(I_merge) + 1e-3 #ensures all points are positive and then add constant background
+            #offset = - np.min(I_merge) # ensures all points are positive
+            #I_sort = np.sort(I_merge) # sort the array to find the 10th lowest point
+            #offset = I_sort[10]
+            last = int(0.02*len(I_merge)) # last 2%
+            offset = np.mean(I_merge[-last:]) # average of last points
+            I_merge -= offset 
+            I_merge += 1e-4 # add a constant
             I0 = np.mean(I_merge[0:4])
             I_merge /= I0
             dI_merge /= I0
