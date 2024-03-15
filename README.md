@@ -49,6 +49,6 @@ We are working on making a GUI available, hence the folder GUI. However this is 
 The program was written by Andreas Haahr Larsen   
 Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette  
 
-## version notes (from beta0.15 onwards)
+## Version notes (from beta0.15 onwards)
 * beta0.15:  adjusted protocol for assigning background level     
 * beta0.16:  default protocol for assigning background levels as in beta0.14, but with an added option to do it differently
