@@ -2,7 +2,7 @@
 
 #############################
 # ML-SAScombine, version:
-version = 'beta0.15'
+version = 'beta0.16'
 #############################
 
 ## importing python packages
@@ -92,6 +92,7 @@ if __name__ == "__main__":
     parser.add_argument("-ft", "--ftest", action="store_true", help="Make F-test for error consistency",default=False)
     parser.add_argument("-equi", "--q_equispaced", action="store_true", help="Equispaced q (do not use weighted average for q in combined data)",default=False)
     parser.add_argument("-base", "--logbase", help="base for logarithmic rebinning (default: 1.05)",default=1.05)
+    parser.add_argument("-offset2", "--offset_option2", action="store_true", help="Instead of offset to avoid negative values, high-q points are set to zero", default=False)
 
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
@@ -503,13 +504,15 @@ if __name__ == "__main__":
 
         if not args.no_normalize:
             ## normalize before export
-            #offset = - np.min(I_merge) # ensures all points are positive
+            if args.offset_option2:
+                last = int(0.02*len(I_merge)) # last 2%
+                offset = np.mean(I_merge[-last:]) # average of last points
+            else:
+                offset = np.min(I_merge) # ensures all points are positive
             #I_sort = np.sort(I_merge) # sort the array to find the 10th lowest point
             #offset = I_sort[10]
-            last = int(0.02*len(I_merge)) # last 2%
-            offset = np.mean(I_merge[-last:]) # average of last points
             I_merge -= offset 
-            I_merge += 1e-4 # add a constant
+            I_merge += 1e-3 # add a constant
             I0 = np.mean(I_merge[0:4])
             I_merge /= I0
             dI_merge /= I0
