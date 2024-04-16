@@ -52,6 +52,6 @@ We are working on making a GUI available, hence the folder GUI. However this is 
 The program was written by Andreas Haahr Larsen   
 Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette  
 
-## Version notes (from beta0.15 and onwards)
+## Release notes (from beta0.15 and onwards)
 * beta0.15:  adjusted protocol for assigning background level     
 * beta0.16:  default protocol for assigning background levels as in beta0.14, but with an added option (-offset2) for an alternative protocol for assigning backgroun levels. If option -offset2 is not selected, consensus data genereted with version beta0.16 will be identical to consensus data generated with version beta0.1. 
