@@ -359,7 +359,7 @@ if __name__ == "__main__":
                         if not os.path.exists(filename):
                             filename = '%s%s%s' % (path,datafile,extension)
             header,footer = get_header_footer(filename)
-            q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
+            q_in,I_in,dI_in = np.genfromtxt(filename,skip_header=header,skip_footer=footer,usecols=[0,1,2],unpack=True)
             qmin_global = np.amax([qmin,qmin_i])
             qmax_global = np.amin([qmax,qmax_i])
             idx = np.where((q_in >= qmin_global) & (q_in <= qmax_global))

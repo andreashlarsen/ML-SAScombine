@@ -167,7 +167,7 @@ def find_qmin_qmax(path,data,extension,RANGE):
                     if not os.path.exists(filename):
                         filename = '%s%s%s' % (path,datafile,extension)
         header,footer = get_header_footer(filename)
-        q,I,dI = np.genfromtxt(filename,skip_header=header,skip_footer=footer,unpack=True)
+        q,I,dI = np.genfromtxt(filename,skip_header=header,skip_footer=footer,usecols=[0,1,2],unpack=True)
         qmin_list.append(np.amin(q))
         qmax_list.append(np.amax(q))
     if RANGE:
