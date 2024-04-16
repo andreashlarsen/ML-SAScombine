@@ -566,6 +566,7 @@ if __name__ == "__main__":
                     printt('Data sorted after compatibility with combined consensus curve, in selected q-range (--qmin_ref and qmax_ref):')
                 else:
                     printt('Data sorted after compatibility with combined consensus curve:')
+                    printt('%20s  %s' % ('name of datafile','reduced chi-square'))
                 for i in np.argsort(chi2r_list):
                     if args.output_scale:
                         printt('%20s: %1.2f (a=%1.3f, b=%1.6f)' % (data[i],chi2r_list[i],a_list[i],b_list[i]))
