@@ -11,14 +11,17 @@ Download mlsascombine.py and the other python scripts in this repository and ins
 ## Run  
 
 #### standard run for combining 3 datasets
+```
 python mlsascombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
-
+```
 #### alternative command for combining the 3 datasets
+```
 python mlsascombine.py --path example_data --ext dat --title my_combined_data
-
+```
 #### instructions and options
+```
 python mlsascombine.py --help
-
+```
 ## Dependencies
 
 ### dependencies from this folder:     
