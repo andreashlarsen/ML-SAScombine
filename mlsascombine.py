@@ -2,7 +2,7 @@
 
 #############################
 # ML-SAScombine, version:
-version = 'beta0.16'
+version = 'beta0.17'
 #############################
 
 ## importing python packages
@@ -85,6 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("-rs", "--ref_smooth", action="store_true", help="Smooth reference curve before alignment [not recommended]", default=False)
     parser.add_argument("-nc", "--no_conv", action="store_true", help="Do not continue iteratively until convergence", default=False)
     parser.add_argument("-nn", "--no_normalize", action="store_true", help="Do not normalize combined dataset", default=False)
+    parser.add_argument("-ga", "--guinier_analysis", action="store_true", help="Normalize using I(0) from autorg Guinier analysis (reguire autorg installed)", default=False)
     parser.add_argument("-sc", "--output_scale", action="store_true", help="Output scale factors and constant adjustments", default=False)
     parser.add_argument("-nl", "--no_log_q", action="store_true", help="Make the combined data evenly distributed on lin scale (instead of on log scale)",default=False)
     parser.add_argument("-exp", "--export", action="store_true", help="Export scaled and subtracted curves", default=False)
@@ -525,6 +526,27 @@ if __name__ == "__main__":
             f.write('# q  I  sigma\n')
             for (qi,Ii,dIi) in zip(q_merge,I_merge,dI_merge):
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
+
+        if args.guinier_analysis:
+            os.system('autorg %s > autorg_out' % filename_out)
+            f = open('autorg_out')
+            lines = f.readlines()
+            for line in lines:
+                if 'I(0) =' in line:
+                    tmp = line.split('=')[1]
+                    I0 = float(tmp.split('+/-')[0])
+            os.remove('autorg_out')
+            I_merge /= I0
+            dI_merge /= I0
+
+            with open(filename_out,'w') as f:
+                f.write('# sample: %s\n' % args.title)
+                f.write('# data\n')
+                for dataname in data:
+                    f.write('# %s\n' % (dataname))
+                f.write('# q  I  sigma\n')
+                for (qi,Ii,dIi) in zip(q_merge,I_merge,dI_merge):
+                    f.write('%e %e %e\n' % (qi,Ii,dIi))
 
         ## figure settings
         if not PLOT_NONE:
