@@ -535,6 +535,7 @@ if __name__ == "__main__":
                 if 'I(0) =' in line:
                     tmp = line.split('=')[1]
                     I0 = float(tmp.split('+/-')[0])
+            f.close()
             os.remove('autorg_out')
             I_merge /= I0
             dI_merge /= I0
