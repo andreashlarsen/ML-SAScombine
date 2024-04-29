@@ -528,7 +528,10 @@ if __name__ == "__main__":
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
 
         if args.guinier_analysis:
-            os.system('autorg %s > autorg_out' % filename_out)
+            try:
+                os.system('autorg %s > autorg_out' % filename_out)
+            except:
+                os.system('./autorg.exe %s > autorg_out' % filename_out)
             f = open('autorg_out')
             lines = f.readlines()
             for line in lines:
