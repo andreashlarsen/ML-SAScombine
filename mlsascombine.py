@@ -529,7 +529,6 @@ if __name__ == "__main__":
 
         if args.guinier_analysis:
             import platform
-            print(platform.system())
             if platform.system() == "Windows":
                 os.system('./autorg.exe %s > autorg_out' % filename_out)
             else:
