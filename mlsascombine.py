@@ -528,7 +528,7 @@ if __name__ == "__main__":
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
 
         def run_autorg(command,data_filename):
-            os.system('%s %s > autorg_out' % (command,data_filename))
+            os.system('%s %s > autorg_out 2>nul' % (command,data_filename))
             f = open('autorg_out','r')
             lines = f.readlines()
             for line in lines:
@@ -550,7 +550,7 @@ if __name__ == "__main__":
                     try: 
                         I0 = run_autorg('./autorg.exe',filename_out)
                     except: 
-                        print('\n!! ERROR: cannot run autorg (from ATSAS).\nIs it correcly installed, and paths correcly set?\nAlternatively, run withou the Guinier analysis option (remove -ga or --guinier_analysis flag from command)\n')
+                        print('\n!! ERROR: cannot run autorg (from ATSAS).\nIs it correcly installed, and paths correcly set?\nAlternatively, run without the Guinier analysis option (remove -ga or --guinier_analysis flag from command)\nIf desired/necessary, manually rescale consensus by Guinier I(0) division\n')
                         sys.exit(1)
             I_merge /= I0
             dI_merge /= I0
