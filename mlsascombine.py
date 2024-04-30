@@ -527,8 +527,8 @@ if __name__ == "__main__":
             for (qi,Ii,dIi) in zip(q_merge,I_merge,dI_merge):
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
 
-        def run_autorg(command):
-            os.system('%s %s > autorg_out' % (command,filename_out))
+        def run_autorg(command,data_filename):
+            os.system('%s %s > autorg_out' % (command,data_filename))
             f = open('autorg_out','r')
             lines = f.readlines()
             for line in lines:
@@ -542,13 +542,13 @@ if __name__ == "__main__":
         
         if args.guinier_analysis:
             try: 
-                I0 = run_autorg('autorg')
+                I0 = run_autorg('autorg',filename_out)
             except: 
                 try:
-                    I0 = run_autorg('autorg.exe')
+                    I0 = run_autorg('autorg.exe',filename_out)
                 except: 
                     try: 
-                        I0 = run_autorg('./autorg.exe')
+                        I0 = run_autorg('./autorg.exe',filename_out)
                     except: 
                         print('\n!! ERROR: cannot run autorg (from ATSAS).\nIs it correcly installed, and paths correcly set?\nAlternatively, run withou the Guinier analysis option (remove -ga or --guinier_analysis flag from command)\n')
                         sys.exit(1)
