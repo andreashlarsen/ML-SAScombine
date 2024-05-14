@@ -7,8 +7,9 @@ The input could be, e.g., data measured on different instruments, or SAXS and WA
 ![Example: combined SAXS data of lysozyme](merge_combined_SAXS_data_of_lysozyme.png)
 
 ## Installation
-ML-SAScombine is a python3 program, so you need to install python3.        
-After python3 installation, download mlsascombine.py and the other python scripts in this repository and install necessary python packages (see dependencies)      
+* install python3
+* download mlsascombine.py and mlsascombine_functions.py from this repository    
+* install necessary python packages (see Dependencies)      
 
 ## Run  
 
