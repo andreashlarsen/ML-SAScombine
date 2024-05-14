@@ -18,14 +18,17 @@ cd <PATH-TO-DIRECTORY>
 ```
 
 #### standard run for combining 3 datasets
+This command combines the three datasets in the example folder of this directory (the example folder should be in the same directory as the two python scripts mlsascombin.py and mlsascombine_functions.py):    
 ```
 python mlsascombine.py --path example_data/ --data "dataset1.dat dataset2.dat dataset3.dat" --title my_combined_data
 ```
 #### alternative command for combining the 3 datasets
+The output of this command is the same as above, but is more compact. It instructs ML-SAScombine to combine all datasets with extension (*.ext) in the folder example_data/ into a merged datafile:  
 ```
 python mlsascombine.py --path example_data --ext dat --title my_combined_data
 ```
 #### instructions and options
+too see all possible options, type:    
 ```
 python mlsascombine.py --help
 ```
