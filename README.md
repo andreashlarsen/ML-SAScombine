@@ -8,10 +8,14 @@ The input could be, e.g., data measured on different instruments, or SAXS and WA
 
 ## Installation
 * install python3
-* download mlsascombine.py and mlsascombine_functions.py from this repository    
+* download mlsascombine.py and mlsascombine_functions.py from this repository (place in same folder on your computer)    
 * install necessary python packages (see Dependencies)      
 
 ## Run  
+To run ML-SAScombine, open a terminal (mac or linux) or command prompt (windows), and change directory to the directory where you saved mlsascombine.py and mlsascombine_functions.py:
+```
+cd <PATH-TO-DIRECTORY>
+```
 
 #### standard run for combining 3 datasets
 ```
@@ -48,15 +52,15 @@ these can usually be added to your python environment by installing pip and runn
 We are working on making a GUI available, hence the folder GUI. However this is not available yet. 
 
 ## Notes  and warnings
-* The program is a beta version - so use it with care. Feedback is more than welcome. Preferably via this GitHub page.
-* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.
+* The program is a beta version - so use it with care. Feedback is more than welcome. Preferably via this GitHub page.nnnn
+* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.    
 
 ## Credit   
 The program was written by Andreas Haahr Larsen   
-Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette  
-If you use ML-SAScombine in you work, please cite: Trewhella, Vachette, Larsen 2024, in prep
+Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette   
+If you use ML-SAScombine in you work, please cite: Trewhella, Vachette, Larsen 2024, in prep   
 
 ## Release notes (from version beta0.15 and onwards)
-* beta0.15:  adjusted default protocol for assigning background level     
-* beta0.16:  added option (-offset2 or --offset_option2) for an alternative protocol for assigning background levels. Not default.
-* beta0.17:  added option (-ga or --guinier_analysis). This option use autorg (from ATSAS) to normalize the merged curve with the forward scattering I(0). Requires that autorg is installad. Not default.
+* beta0.15:  adjusted default protocol for assigning background level.     
+* beta0.16:  added option (-offset2 or --offset_option2) for an alternative protocol for assigning background levels. Not default.    
+* beta0.17:  added option (-ga or --guinier_analysis). This option use autorg (from ATSAS) to normalize the merged curve with the forward scattering I(0). Requires that autorg is installad. Not default.    
