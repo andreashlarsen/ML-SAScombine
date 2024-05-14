@@ -52,7 +52,7 @@ these can usually be added to your python environment by installing pip and runn
 We are working on making a GUI available, hence the folder GUI. However this is not available yet. 
 
 ## Limitations
-* The program has only been tested on a limited number of datasets - so please assess the outcome critically. Feedback is more than welcome. Preferably via this GitHub page.    
+* The program has only been tested on a limited number of datasets - so please assess the outcome critically. Feedback is more than welcome. Preferably via this GitHub page (under "Issues").    
 * ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.    
 
 ## Credit   
