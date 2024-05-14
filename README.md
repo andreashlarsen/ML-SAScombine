@@ -5,9 +5,10 @@ ML-SAScombine applies maximum likelihood (ML) to combine multiple small-angle sc
 The input could be, e.g., data measured on different instruments, or SAXS and WAXS data.   
 
 ![Example: combined SAXS data of lysozyme](merge_combined_SAXS_data_of_lysozyme.png)
-## Download
-ML-SAScombine is a python3 program, so you need to install python3    
-Download mlsascombine.py and the other python scripts in this repository and install necessary python packages (see dependencies)      
+
+## Installation
+ML-SAScombine is a python3 program, so you need to install python3.        
+After python3 installation, download mlsascombine.py and the other python scripts in this repository and install necessary python packages (see dependencies)      
 
 ## Run  
 
