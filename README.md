@@ -2,7 +2,7 @@
 version beta0.17
 
 ML-SAScombine applies maximum likelihood (ML) to combine multiple small-angle scattering (SAS) datasets into a consensus dataset   
-The input could be, e.g., data measured on different instruments on the same sample or SAXS and WAXS data (Trewhella, Vachette, Larsen 2024, in prep)   
+The input could be, e.g., data measured on different instruments, or SAXS and WAXS data (Trewhella, Vachette, Larsen 2024, in prep)   
 
 ## Download
 ML-SAScombine is a python3 program, so you need to install python3    
@@ -48,9 +48,10 @@ We are working on making a GUI available, hence the folder GUI. However this is 
 * The program is a beta version - so use it with care. Feedback is more than welcome. Preferably via this GitHub page.
 * ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.
 
-## Credit
+## Credit   
 The program was written by Andreas Haahr Larsen   
 Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette  
+If you use ML-SAScombine in you work, please cite: Trewhella, Vachette, Larsen 2024, in prep
 
 ## Release notes (from version beta0.15 and onwards)
 * beta0.15:  adjusted default protocol for assigning background level     
