@@ -8,7 +8,7 @@ The input could be, e.g., data measured on different instruments, or SAXS and WA
 
 ## Installation
 * install python3
-* download mlsascombine.py and mlsascombine_functions.py from this repository (place in same folder on your computer)    
+* download mlsascombine.py and mlsascombine_functions.py from this repository (place both scripts in same folder on your computer)    
 * install necessary python packages (see Dependencies)      
 
 ## Run  
