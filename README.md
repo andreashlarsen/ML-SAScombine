@@ -28,7 +28,7 @@ The output of this command is the same as above, but is more compact. It instruc
 python mlsascombine.py --path example_data --ext dat --title my_combined_data
 ```
 #### instructions and options
-too see all possible options, type:    
+too display all possible options, type:    
 ```
 python mlsascombine.py --help
 ```
