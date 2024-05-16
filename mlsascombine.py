@@ -2,7 +2,7 @@
 
 #############################
 # ML-SAScombine, version:
-version = 'beta0.17'
+version = 'beta0.18'
 #############################
 
 ## importing python packages
@@ -79,6 +79,7 @@ if __name__ == "__main__":
     parser.add_argument("-qtemp", "--q_template", help="Provide file for q template (only using first column of file) [default: no template used]", default="none")
     parser.add_argument("-qmin_all", "--qmin_all", help="Provide individual qmin values for all data (format: \"0.02 0.001\")",default="none")
     parser.add_argument("-qmax_all", "--qmax_all", help="Provide individual qmax values for all data (format: \"0.3 1.0\")",default="none")
+    parser.add_argument("-setb", "--set_constant_background", help="Set lowest value in combined data (constant background)",default="1e-3")
     
     # true/false options
     parser.add_argument("-r", "--range", action="store_true", help="Only include q range with overlap of min 2 datasets",default=False)
@@ -124,6 +125,7 @@ if __name__ == "__main__":
     exclude_in = args.exclude
     conv_threshold = float(args.conv_crit) 
     q_temp_data_in = args.q_template
+    constant_background = float(args.set_constant_background)
 
     ## convert data string to list and remove empty entries
     try:
@@ -513,7 +515,7 @@ if __name__ == "__main__":
             #I_sort = np.sort(I_merge) # sort the array to find the 10th lowest point
             #offset = I_sort[10]
             I_merge -= offset 
-            I_merge += 1e-3 # add a constant
+            I_merge += constant_background # add a constant
             I0 = np.mean(I_merge[0:4])
             I_merge /= I0
             dI_merge /= I0
