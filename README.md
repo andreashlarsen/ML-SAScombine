@@ -1,5 +1,5 @@
 # ML-SAScombine
-version beta0.17
+version beta0.18
 
 ML-SAScombine applies maximum likelihood (ML) to combine multiple small-angle scattering (SAS) datasets into a consensus dataset   
 The input could be, e.g., data measured on different instruments, or SAXS and WAXS data.   
@@ -61,9 +61,10 @@ We are working on making a GUI available, hence the folder GUI. However this is 
 ## Credit   
 The program was written by Andreas Haahr Larsen   
 Input and insight from Jochen Hub, Jill Trewhella and Patrice Vachette   
-If you use ML-SAScombine in you work, please cite: Trewhella, Vachette, Larsen 2024, in prep   
+If you use ML-SAScombine in you work, please cite: Trewhella, Vachette, Larsen (2024) IUCrJ, in review   
 
 ## Release notes (from version beta0.15 and onwards)
 * beta0.15:  adjusted default protocol for assigning background level.     
 * beta0.16:  added option (-offset2 or --offset_option2) for an alternative protocol for assigning background levels. Not default.    
-* beta0.17:  added option (-ga or --guinier_analysis). This option use autorg (from ATSAS) to normalize the merged curve with the forward scattering I(0). Requires that autorg is installad. Not default.    
+* beta0.17:  added option (-ga or --guinier_analysis). This option use autorg (from ATSAS) to normalize the merged curve with the forward scattering I(0). Requires that autorg is installad. Not default.
+* beta0.18:  added option (-setb [float number] or --set_constant_background [float number]). This option sets the background level of the merged curve such that the lowest value is equal to the user input value. Default is 0.001.     
