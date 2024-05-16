@@ -310,7 +310,7 @@ if __name__ == "__main__":
         PLOT_MERGE = False
         STOP_NEXT = False
         VERBOSE = False
-        printt('The results are independent on the choise of reference curve, unless --no_conv is used')
+        printt('The results are independent of the choice of reference curve, unless --no_conv is used')
 
     if args.res:
        res_dir = '%s/residuals' % merge_dir
