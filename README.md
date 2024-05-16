@@ -56,7 +56,7 @@ We are working on making a GUI available, hence the folder GUI. However this is 
 
 ## Limitations
 * The program has only been tested on a limited number of datasets - so please assess the outcome critically. Feedback is more than welcome. Preferably via this GitHub page (under "Issues").    
-* ML-SAScombine can be applied to SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.    
+* ML-SAScombine can combine SANS data, but resolution effects are not taken into account, which will inevitably lead to systematic errors.    
 
 ## Credit   
 The program was written by Andreas Haahr Larsen   
