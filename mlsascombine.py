@@ -71,7 +71,7 @@ if __name__ == "__main__":
     parser.add_argument("-qmax", "--qmax", help="maximum q-value in combined data file", default="none")
     parser.add_argument("-N", "--N", type=int, help="Maximum Number of points in combined data", default="500")
     parser.add_argument("-t", "--title", help="plot title, also used for output name [recommended]",default='Combined data')
-    parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included in combined data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
+    parser.add_argument("-ref", "--ref", help="Provide ref data (full path) for scaling - not included if combined data is not in data list. Write an integer to use a dataset from the list (e.g. 2 for dataset number 2) [default: 1].", default="none")
     parser.add_argument("-qmin_ref", "--qmin_ref", help="Provide a min q to use in reference data, for alignment [default: 0]", default="0")
     parser.add_argument("-qmax_ref", "--qmax_ref", help="Provide a max q to use in reference data, for alignment [default: no max value]", default="9999")
     parser.add_argument("-exc", "--exclude", help="Exclude one or more datasets from list. list of integers with ",default="none")
