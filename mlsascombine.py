@@ -129,11 +129,7 @@ if __name__ == "__main__":
 
     ## convert data string to list and remove empty entries
     try:
-        data_tmp = data_in.split(' ')      
-        data = []
-        for i in range(len(data_tmp)):
-            if not data_tmp[i] in ['',' ','  ','   ','    ','     ','      ','       ','        ']:
-                data.append(data_tmp[i])
+        data = data_in.split()      
     except:
         if not extension == "":
             data = [file for file in os.listdir(path) if file.endswith(extension)]
@@ -143,12 +139,8 @@ if __name__ == "__main__":
             sys.exit(1)
 
     ## do the same for exclude input
-    if not exclude_in == "none": 
-        exclude_tmp = exclude_in.split(' ')
-        exclude  = []
-        for i in range(len(exclude_tmp)):
-            if not exclude_tmp[i] in ['',' ','  ','   ','    ','     ','      ','       ','        ']:
-                exclude.append(exclude_tmp[i])
+    if not exclude_in == "none":
+        exclude = exclude_in.split() 
         for i in range(len(exclude)):
             if exclude[i].isdigit():
                 data_idx = int(exclude[i])-1
@@ -161,11 +153,11 @@ if __name__ == "__main__":
                 print("tried to exclude %s, but this data is not in list of data" % exc)
         
     if not data:
-        print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\"")
+        print("ERROR: could not find data. Try with option -d \"data1.dat data2.dat\" (filenames separated by whitespace)")
         sys.exit(1)
 
     if len(data) == 1:
-        print("ERROR: only 1 dataset, need at least 2. Try with option -d \"data1.dat data2.dat\"")
+        print("ERROR: only 1 dataset, need at least 2. Try with option -d \"data1.dat data2.dat\" (filenames separated by whitespace)")
         sys.exit(1)
 
     ## labels
@@ -175,7 +167,7 @@ if __name__ == "__main__":
             tmp = l.split('.')[0]
             labels.append(tmp.split('/')[-1])
     else:
-        labels = args.label.split(' ')
+        labels = args.label.split()
     ms = 4 # markersize in plots
     
     ## determine qmin and qmax
@@ -197,11 +189,11 @@ if __name__ == "__main__":
     if args.qmin_all == "none":
         qmin_all = np.ones(len(data))*qmin
     else:
-        qmin_all = [float(num) for num in args.qmin_all.split(' ')]
+        qmin_all = [float(num) for num in args.qmin_all.split()]
     if args.qmax_all == "none":
         qmax_all = np.ones(len(data))*qmax
     else:
-        qmax_all = [float(num) for num in args.qmax_all.split(' ')]    
+        qmax_all = [float(num) for num in args.qmax_all.split()]    
 
     ## make q
     if not q_temp_data_in == "none":
