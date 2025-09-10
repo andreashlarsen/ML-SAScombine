@@ -2,7 +2,7 @@
 
 #############################
 # ML-SAScombine, version:
-version = 'beta0.18'
+version = 'beta0.19'
 #############################
 
 ## importing python packages
@@ -95,6 +95,7 @@ if __name__ == "__main__":
     parser.add_argument("-equi", "--q_equispaced", action="store_true", help="Equispaced q (do not use weighted average for q in combined data)",default=False)
     parser.add_argument("-base", "--logbase", help="base for logarithmic rebinning (default: 1.05)",default=1.05)
     parser.add_argument("-offset2", "--offset_option2", action="store_true", help="Instead of offset to avoid negative values, high-q points are set to zero", default=False)
+    parser.add_argument("-sh", "--short_header", action="store_true", help="Short header, no list of files, for easier file reading", default=False)
 
     # plot options
     parser.add_argument("-pa", "--plot_all", action="store_true", help="Plot all pairwise fits [for outlier analysis]", default=False)
@@ -513,10 +514,13 @@ if __name__ == "__main__":
             dI_merge /= I0
         
         with open(filename_out,'w') as f:
-            f.write('# sample: %s\n' % args.title)
-            f.write('# data\n')
-            for dataname in data:
-                f.write('# %s\n' % (dataname))
+            if args.short_header:
+                pass
+            else:
+                f.write('# sample: %s\n' % args.title)
+                f.write('# data\n')
+                for dataname in data:
+                    f.write('# %s\n' % (dataname))
             f.write('# q  I  sigma\n')
             for (qi,Ii,dIi) in zip(q_merge,I_merge,dI_merge):
                 f.write('%e %e %e\n' % (qi,Ii,dIi))
