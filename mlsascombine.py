@@ -278,7 +278,7 @@ if __name__ == "__main__":
     ## welcome message
     printt('#########################################')
     printt('RUNNING mlsascombine.py, version %s \nfor instructions: python mlsascombine.py -h' % version)
-    printt('command used: python %s' % input_string)
+    printt('command used: %s' % input_string)
     printt('#########################################')
 
     ## print input values
