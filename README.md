@@ -38,16 +38,10 @@ python mlsascombine.py --help
 * mlsascombine_functions.py
 (should be in the same folder as mlsascombine.py)    
 
-### other dependencies (standard python packages):   
-* argparse     
+### other dependencies (python packages):   
 * numpy    
-* matplotlib    
-* os    
-* shutil    
-* math    
+* matplotlib       
 * scipy
-* sys
-* time
 
 these can usually be added to your python environment by installing pip and running, e.g., pip install numpy (or pip3 install numpy)    
 
